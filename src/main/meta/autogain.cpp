@@ -41,74 +41,46 @@ namespace lsp
         //-------------------------------------------------------------------------
         // Plugin metadata
 
-        // NOTE: Port identifiers should not be longer than 7 characters as it will overflow VST2 parameter name buffers
         static const port_t autogain_mono_ports[] =
         {
-            // Input and output audio ports
             PORTS_MONO_PLUGIN,
-
-            // Input controls
             BYPASS,
-            INT_CONTROL("d_in", "Delay in samples", U_SAMPLES, autogain::SAMPLES),
-            DRY_GAIN(0.0f),
-            WET_GAIN(1.0f),
-            OUT_GAIN,
-
-            // Output controls
-            METER_MINMAX("d_out", "Delay time in milliseconds", U_MSEC, 0.0f, autogain::DELAY_OUT_MAX_TIME),
-            METER_GAIN("min", "Input gain", GAIN_AMP_P_48_DB),
-            METER_GAIN("mout", "Output gain", GAIN_AMP_P_48_DB),
 
             PORTS_END
         };
 
-        // NOTE: Port identifiers should not be longer than 7 characters as it will overflow VST2 parameter name buffers
         static const port_t autogain_stereo_ports[] =
         {
-            // Input and output audio ports
             PORTS_STEREO_PLUGIN,
-
-            // Input controls
             BYPASS,
-            INT_CONTROL("d_in", "Delay in samples", U_SAMPLES, autogain::SAMPLES),
-            DRY_GAIN(0.0f),
-            WET_GAIN(1.0f),
-            OUT_GAIN,
-
-            // Output controls
-            METER_MINMAX("d_out", "Delay time in milliseconds", U_MSEC, 0.0f, autogain::DELAY_OUT_MAX_TIME),
-            METER_GAIN("min_l", "Input gain left",  GAIN_AMP_P_48_DB),
-            METER_GAIN("mout_l", "Output gain left",  GAIN_AMP_P_48_DB),
-            METER_GAIN("min_r", "Input gain right",  GAIN_AMP_P_48_DB),
-            METER_GAIN("mout_r", "Output gain right", GAIN_AMP_P_48_DB),
 
             PORTS_END
         };
 
-        static const int plugin_classes[]       = { C_DELAY, -1 };
+        static const int plugin_classes[]       = { C_ENVELOPE, -1 };
         static const int clap_features_mono[]   = { CF_AUDIO_EFFECT, CF_UTILITY, CF_MONO, -1 };
         static const int clap_features_stereo[] = { CF_AUDIO_EFFECT, CF_UTILITY, CF_STEREO, -1 };
 
         const meta::bundle_t autogain_bundle =
         {
             "autogain",
-            "Plugin Template",
+            "Automatic Gain Control",
             B_UTILITIES,
             "", // TODO: provide ID of the video on YouTube
-            "" // TODO: write plugin description, should be the same to the english version in 'bundles.json'
+            "This plugin allows to stick the loudness of the audio to the desired level"
         };
 
         const plugin_t autogain_mono =
         {
-            "Pluginschablone Mono",
-            "Plugin Template Mono",
-            "PS1M",
+            "Autogain Mono",
+            "Autogain Mono",
+            "AG1M",
             &developers::v_sadovnikov,
             "autogain_mono",
             LSP_LV2_URI("autogain_mono"),
             LSP_LV2UI_URI("autogain_mono"),
-            "xxxx",         // TODO: fill valid VST2 ID (4 letters/digits)
-            1,              // TODO: fill valid LADSPA identifier (positive decimal integer)
+            "ag1m",
+            LSP_LADSPA_AUTOGAIN_BASE + 0,
             LSP_LADSPA_URI("autogain_mono"),
             LSP_CLAP_URI("autogain_mono"),
             LSP_PLUGINS_AUTOGAIN_VERSION,
@@ -116,7 +88,7 @@ namespace lsp
             clap_features_mono,
             E_DUMP_STATE,
             autogain_mono_ports,
-            "template/plugin.xml",
+            "util/autogain/mono.xml",
             NULL,
             mono_plugin_port_groups,
             &autogain_bundle
@@ -124,15 +96,15 @@ namespace lsp
 
         const plugin_t autogain_stereo =
         {
-            "Pluginschablone Stereo",
-            "Plugin Template Stereo",
-            "PS1S",
+            "Autogain Stereo",
+            "Autogain Stereo",
+            "AG1S",
             &developers::v_sadovnikov,
             "autogain_stereo",
             LSP_LV2_URI("autogain_stereo"),
             LSP_LV2UI_URI("autogain_stereo"),
-            "yyyy",         // TODO: fill valid VST2 ID (4 letters/digits)
-            2,              // TODO: fill valid LADSPA identifier (positive decimal integer)
+            "ag1s",
+            LSP_LADSPA_AUTOGAIN_BASE + 1,
             LSP_LADSPA_URI("autogain_stereo"),
             LSP_CLAP_URI("autogain_stereo"),
             LSP_PLUGINS_AUTOGAIN_VERSION,
@@ -140,7 +112,7 @@ namespace lsp
             clap_features_stereo,
             E_DUMP_STATE,
             autogain_stereo_ports,
-            "template/plugin.xml",
+            "util/autogain/stereo.xml",
             NULL,
             stereo_plugin_port_groups,
             &autogain_bundle

@@ -22,8 +22,8 @@
 #ifndef PRIVATE_PLUGINS_AUTOGAIN_H_
 #define PRIVATE_PLUGINS_AUTOGAIN_H_
 
-#include <lsp-plug.in/dsp-units/util/Delay.h>
 #include <lsp-plug.in/dsp-units/ctl/Bypass.h>
+#include <lsp-plug.in/dsp-units/meters/LoudnessMeter.h>
 #include <lsp-plug.in/plug-fw/plug.h>
 #include <private/meta/autogain.h>
 
@@ -36,10 +36,6 @@ namespace lsp
          */
         class autogain: public plug::Module
         {
-            private:
-                autogain & operator = (const autogain &);
-                autogain (const autogain &);
-
             protected:
                 enum mode_t
                 {
@@ -51,52 +47,45 @@ namespace lsp
                 typedef struct channel_t
                 {
                     // DSP processing modules
-                    dspu::Delay         sLine;              // Delay line
-                    dspu::Bypass        sBypass;            // Bypass
+                    dspu::Bypass            sBypass;            // Bypass
 
-                    // Parameters
-                    ssize_t             nDelay;             // Actual delay of the signal
-                    float               fDryGain;           // Dry gain (unprocessed signal)
-                    float               fWetGain;           // Wet gain (processed signal)
+                    float                  *vIn;                // Input signal
+                    float                  *vOut;               // Output signal
 
-                    // Input ports
-                    plug::IPort        *pIn;                // Input port
-                    plug::IPort        *pOut;               // Output port
-                    plug::IPort        *pDelay;             // Delay (in samples)
-                    plug::IPort        *pDry;               // Dry control
-                    plug::IPort        *pWet;               // Wet control
-
-                    // Output ports
-                    plug::IPort        *pOutDelay;          // Output delay time
-                    plug::IPort        *pInLevel;           // Input signal level
-                    plug::IPort        *pOutLevel;          // Output signal level
+                    plug::IPort            *pIn;                // Input port
+                    plug::IPort            *pOut;               // Output port
                 } channel_t;
 
             protected:
-                size_t              nChannels;          // Number of channels
-                channel_t          *vChannels;          // Delay channels
-                float              *vBuffer;            // Temporary buffer for audio processing
+                dspu::LoudnessMeter     sMeter;             // Loudness metering tool
 
-                plug::IPort        *pBypass;            // Bypass
-                plug::IPort        *pGainOut;           // Output gain
+                size_t                  nChannels;          // Number of channels
+                channel_t              *vChannels;          // Delay channels
 
-                uint8_t            *pData;              // Allocated data
+                plug::IPort            *pBypass;            // Bypass
+
+                uint8_t                *pData;              // Allocated data
 
             protected:
-                void                do_destroy();
+                void                    do_destroy();
 
             public:
                 explicit autogain(const meta::plugin_t *meta);
+                autogain (const autogain &) = delete;
+                autogain (autogain &&) = delete;
                 virtual ~autogain() override;
 
-                virtual void        init(plug::IWrapper *wrapper, plug::IPort **ports) override;
-                virtual void        destroy() override;
+                autogain & operator = (const autogain &) = delete;
+                autogain & operator = (autogain &&) = delete;
+
+                virtual void            init(plug::IWrapper *wrapper, plug::IPort **ports) override;
+                virtual void            destroy() override;
 
             public:
-                virtual void        update_sample_rate(long sr) override;
-                virtual void        update_settings() override;
-                virtual void        process(size_t samples) override;
-                virtual void        dump(dspu::IStateDumper *v) const override;
+                virtual void            update_sample_rate(long sr) override;
+                virtual void            update_settings() override;
+                virtual void            process(size_t samples) override;
+                virtual void            dump(dspu::IStateDumper *v) const override;
         };
 
     } /* namespace plugins */

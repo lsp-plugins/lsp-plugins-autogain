@@ -1,7 +1,7 @@
 {
 	"autogain": {
-		"name": "Plugin Template",
-		"description": "TODO: write description"
+		"name": "Automatic Gain Control",
+		"description": "This plugin allows to stick the loudness of the audio to the desired level"
 	}
 }
 

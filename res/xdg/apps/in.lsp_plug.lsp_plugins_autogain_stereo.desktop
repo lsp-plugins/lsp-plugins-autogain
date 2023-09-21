@@ -1,9 +1,9 @@
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=TODO: Template Plugin
-GenericName=TODO: Template Plugin
-Comment=TODO: add description what plugin does
+Name=Autogain Stereo
+GenericName=Autogain
+Comment=This plugin allows to stick the loudness of the audio to the desired level
 Exec=lsp-plugins-autogain-stereo
 Icon=lsp-plugins
 Terminal=false
