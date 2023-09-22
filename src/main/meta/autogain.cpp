@@ -38,13 +38,28 @@ namespace lsp
 {
     namespace meta
     {
-        //-------------------------------------------------------------------------
-        // Plugin metadata
+        static const port_item_t weighting_modes[] =
+        {
+            { "None",           "autogain.weighting.none"   },
+            { "A-Weighted",     "autogain.weighting.a"      },
+            { "B-Weighted",     "autogain.weighting.b"      },
+            { "C-Weighted",     "autogain.weighting.c"      },
+            { "D-Weighted",     "autogain.weighting.d"      },
+            { "K-Weighted",     "autogain.weighting.k"      },
+            { NULL, NULL }
+        };
+
+        #define AUTOGAIN_COMMON \
+            BYPASS, \
+            LOG_CONTROL("period", "Loudness measuring period", U_MSEC, meta::autogain::PERIOD),     \
+            COMBO("weight", "Weighting function", meta::autogain::WEIGHT_DFL, weighting_modes),     \
+            MESH("gr_in", "Input loudness graph", 2, meta::autogain::MESH_POINTS)
+
 
         static const port_t autogain_mono_ports[] =
         {
             PORTS_MONO_PLUGIN,
-            BYPASS,
+            AUTOGAIN_COMMON,
 
             PORTS_END
         };
@@ -52,7 +67,7 @@ namespace lsp
         static const port_t autogain_stereo_ports[] =
         {
             PORTS_STEREO_PLUGIN,
-            BYPASS,
+            AUTOGAIN_COMMON,
 
             PORTS_END
         };

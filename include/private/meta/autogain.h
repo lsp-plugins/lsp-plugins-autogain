@@ -33,17 +33,27 @@ namespace lsp
     {
         typedef struct autogain
         {
-            static constexpr float  SAMPLES_MIN         = 0.0f;
-            static constexpr float  SAMPLES_MAX         = 10000.0f;
-            static constexpr float  SAMPLES_DFL         = 0.0f;
-            static constexpr float  SAMPLES_STEP        = 1.0f;
+            static constexpr float  PERIOD_MIN          = 10.0f;
+            static constexpr float  PERIOD_MAX          = 2000.0f;
+            static constexpr float  PERIOD_STEP         = 0.005f;
+            static constexpr float  PERIOD_DFL          = 400.0f;
 
-            static constexpr float  TIME_MIN            = 0.0f;
-            static constexpr float  TIME_MAX            = 1000.0f;
-            static constexpr float  TIME_DFL            = 0.0f;
-            static constexpr float  TIME_STEP           = 0.01f;
+            static constexpr float  MESH_TIME           = 2.0f;
+            static constexpr size_t MESH_POINTS         = 640.0f;
 
             static constexpr float  DELAY_OUT_MAX_TIME  = 10000.0f;
+
+            enum weighting_t
+            {
+                WEIGHT_NONE,
+                WEIGHT_A,
+                WEIGHT_B,
+                WEIGHT_C,
+                WEIGHT_D,
+                WEIGHT_K,
+
+                WEIGHT_DFL = WEIGHT_K
+            };
         } autogain;
 
         // Plugin type metadata

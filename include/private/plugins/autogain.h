@@ -24,6 +24,8 @@
 
 #include <lsp-plug.in/dsp-units/ctl/Bypass.h>
 #include <lsp-plug.in/dsp-units/meters/LoudnessMeter.h>
+#include <lsp-plug.in/dsp-units/misc/broadcast.h>
+#include <lsp-plug.in/dsp-units/util/MeterGraph.h>
 #include <lsp-plug.in/plug-fw/plug.h>
 #include <private/meta/autogain.h>
 
@@ -51,23 +53,40 @@ namespace lsp
 
                     float                  *vIn;                // Input signal
                     float                  *vOut;               // Output signal
+                    float                  *vBuffer;            // Temporary buffer for audio processing
 
                     plug::IPort            *pIn;                // Input port
                     plug::IPort            *pOut;               // Output port
                 } channel_t;
 
             protected:
+                dspu::MeterGraph        sInGain;            // Loudness metering graph for input gain
                 dspu::LoudnessMeter     sMeter;             // Loudness metering tool
 
                 size_t                  nChannels;          // Number of channels
                 channel_t              *vChannels;          // Delay channels
 
+                float                  *vBuffer;            // Buffer for temporary data
+                float                  *vTimePoints;        // Time points
+
                 plug::IPort            *pBypass;            // Bypass
+                plug::IPort            *pPeriod;            // Metering period
+                plug::IPort            *pWeighting;         // Weighting function
+                plug::IPort            *pInGain;            // Output loudness mesh data
 
                 uint8_t                *pData;              // Allocated data
 
             protected:
+                static dspu::bs::weighting_t    decode_weighting(size_t weighting);
+
+            protected:
                 void                    do_destroy();
+                void                    bind_audio_ports();
+                void                    measure_input_loudness(size_t samples);
+                void                    update_audio_buffers(size_t samples);
+                void                    compute_gain_correction(size_t samples);
+                void                    apply_gain_correction(size_t samples);
+                void                    output_mesh_data();
 
             public:
                 explicit autogain(const meta::plugin_t *meta);

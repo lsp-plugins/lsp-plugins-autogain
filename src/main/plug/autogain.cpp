@@ -69,7 +69,13 @@ namespace lsp
             // Initialize other parameters
             vChannels       = NULL;
 
+            vBuffer         = NULL;
+            vTimePoints     = NULL;
+
             pBypass         = NULL;
+            pPeriod         = NULL;
+            pWeighting      = NULL;
+            pInGain         = NULL;
 
             pData           = NULL;
         }
@@ -86,23 +92,40 @@ namespace lsp
 
             // Estimate the number of bytes to allocate
             size_t szof_channels    = align_size(sizeof(channel_t) * nChannels, OPTIMAL_ALIGN);
-            size_t buf_sz           = BUFFER_SIZE * sizeof(float);
-            size_t alloc            = szof_channels + buf_sz;
+            size_t szof_buffer      = BUFFER_SIZE * sizeof(float);
+            size_t alloc            =
+                szof_channels +     // vChannels
+                szof_buffer +       // vBuffer
+                szof_buffer +       // vTimePoints
+                nChannels * (
+                    szof_buffer     // vBuffer
+                );
 
             // Allocate memory-aligned data
             uint8_t *ptr            = alloc_aligned<uint8_t>(pData, alloc, OPTIMAL_ALIGN);
             if (ptr == NULL)
                 return;
 
+            status_t res            = sMeter.init(nChannels, meta::autogain::PERIOD_MAX);
+            if (res != STATUS_OK)
+                return;
+
             // Initialize pointers to channels and temporary buffer
             vChannels               = reinterpret_cast<channel_t *>(ptr);
             ptr                    += szof_channels;
+            vBuffer                 = reinterpret_cast<float *>(ptr);
+            ptr                    += szof_buffer;
+            vTimePoints             = reinterpret_cast<float *>(ptr);
+            ptr                    += szof_buffer;
 
             for (size_t i=0; i < nChannels; ++i)
             {
                 channel_t *c            = &vChannels[i];
 
                 c->sBypass.construct();
+
+                c->vBuffer              = reinterpret_cast<float *>(ptr);
+                ptr                    += szof_buffer;
 
                 c->pIn                  = NULL;
                 c->pOut                 = NULL;
@@ -121,7 +144,15 @@ namespace lsp
                 vChannels[i].pOut   = TRACE_PORT(ports[port_id++]);
 
             // Bind bypass
-            pBypass              = TRACE_PORT(ports[port_id++]);
+            pBypass             = TRACE_PORT(ports[port_id++]);
+            pPeriod             = TRACE_PORT(ports[port_id++]);
+            pWeighting          = TRACE_PORT(ports[port_id++]);
+            pInGain             = TRACE_PORT(ports[port_id++]);
+
+            // Fill values
+            float k     = meta::autogain::MESH_TIME / (meta::autogain::MESH_POINTS - 1);
+            for (size_t i=0; i<meta::autogain::MESH_POINTS; ++i)
+                vTimePoints[i] =  meta::autogain::MESH_TIME - k*i;
         }
 
         void autogain::destroy()
@@ -132,6 +163,9 @@ namespace lsp
 
         void autogain::do_destroy()
         {
+            sInGain.destroy();
+            sMeter.destroy();
+
             // Destroy channels
             if (vChannels != NULL)
             {
@@ -153,6 +187,12 @@ namespace lsp
 
         void autogain::update_sample_rate(long sr)
         {
+            size_t samples_per_dot  = dspu::seconds_to_samples(
+                sr, meta::autogain::MESH_TIME / meta::autogain::MESH_POINTS);
+
+            sMeter.set_sample_rate(sr);
+            sInGain.init(meta::autogain::MESH_POINTS, samples_per_dot);
+
             // Update sample rate for the bypass processors
             for (size_t i=0; i<nChannels; ++i)
             {
@@ -161,19 +201,75 @@ namespace lsp
             }
         }
 
+        dspu::bs::weighting_t autogain::decode_weighting(size_t weighting)
+        {
+            switch (weighting)
+            {
+                case meta::autogain::WEIGHT_A:  return dspu::bs::WEIGHT_A;
+                case meta::autogain::WEIGHT_B:  return dspu::bs::WEIGHT_B;
+                case meta::autogain::WEIGHT_C:  return dspu::bs::WEIGHT_C;
+                case meta::autogain::WEIGHT_D:  return dspu::bs::WEIGHT_D;
+                case meta::autogain::WEIGHT_K:  return dspu::bs::WEIGHT_K;
+
+                case meta::autogain::WEIGHT_NONE:
+                default:
+                    break;
+            }
+
+            return dspu::bs::WEIGHT_NONE;
+        }
+
         void autogain::update_settings()
         {
             bool bypass             = pBypass->value() >= 0.5f;
 
+            // Set measuring period
+            sMeter.set_period(pPeriod->value());
+            sMeter.set_weighting(decode_weighting(pWeighting->value()));
+            if (nChannels > 1)
+            {
+                sMeter.set_designation(0, dspu::bs::CHANNEL_LEFT);
+                sMeter.set_designation(1, dspu::bs::CHANNEL_RIGHT);
+                sMeter.set_link(0, 1.0f);
+                sMeter.set_link(1, 1.0f);
+                sMeter.set_active(0, true);
+                sMeter.set_active(1, true);
+            }
+            else
+            {
+                sMeter.set_designation(0, dspu::bs::CHANNEL_CENTER);
+                sMeter.set_link(0, 1.0f);
+                sMeter.set_active(0, true);
+            }
+
+            // Update bypass
             for (size_t i=0; i<nChannels; ++i)
             {
                 channel_t *c            = &vChannels[i];
-
                 c->sBypass.set_bypass(bypass);
             }
         }
 
         void autogain::process(size_t samples)
+        {
+            bind_audio_ports();
+
+            for (size_t offset=0; offset < samples; ++offset)
+            {
+                size_t to_do    = lsp_min(samples - offset, BUFFER_SIZE);
+
+                measure_input_loudness(to_do);
+                compute_gain_correction(to_do);
+                apply_gain_correction(to_do);
+                update_audio_buffers(to_do);
+
+                offset         += to_do;
+            }
+
+            output_mesh_data();
+        }
+
+        void autogain::bind_audio_ports()
         {
             for (size_t i=0; i<nChannels; ++i)
             {
@@ -182,21 +278,60 @@ namespace lsp
                 c->vIn          = c->pIn->buffer<float>();
                 c->vOut         = c->pOut->buffer<float>();
             }
+        }
 
-            for (size_t offset=0; offset < samples; ++offset)
+        void autogain::measure_input_loudness(size_t samples)
+        {
+            // Bind channels for analysis
+            for (size_t i=0; i<nChannels; ++i)
             {
-                size_t to_do    = lsp_min(samples - offset, BUFFER_SIZE);
+                channel_t *c    = &vChannels[i];
+                sMeter.bind(i, NULL, c->vIn, 0);
+            }
+            sMeter.process(vBuffer, samples, dspu::bs::DBFS_TO_LUFS_SHIFT_GAIN);
+
+            // Process the loudness
+            sInGain.process(vBuffer, samples);
+        }
+
+        void autogain::compute_gain_correction(size_t samples)
+        {
+            // TODO
+        }
+
+        void autogain::apply_gain_correction(size_t samples)
+        {
+            // TODO
+        }
+
+        void autogain::update_audio_buffers(size_t samples)
+        {
+            for (size_t i=0; i<nChannels; ++i)
+            {
+                channel_t *c    = &vChannels[i];
 
 
-                // Update pointers
-                for (size_t i=0; i<nChannels; ++i)
-                {
-                    channel_t *c    = &vChannels[i];
+                // TODO: remove this after full implementation
+                dsp::copy(c->vBuffer, c->vIn, samples);
 
-                    c->vIn         += to_do;
-                    c->vOut        += to_do;
-                }
-                offset         += to_do;
+                // Apply bypass
+                c->sBypass.process(c->vOut, c->vIn, c->vBuffer, samples);
+
+                // Move pointers
+                c->vIn         += samples;
+                c->vOut        += samples;
+            }
+        }
+
+        void autogain::output_mesh_data()
+        {
+            // Sync input gain mesh
+            plug::mesh_t *mesh    = pInGain->buffer<plug::mesh_t>();
+            if ((mesh != NULL) && (mesh->isEmpty()))
+            {
+                dsp::copy(mesh->pvData[0], vTimePoints, meta::autogain::MESH_POINTS);
+                dsp::copy(mesh->pvData[1], sInGain.data(), meta::autogain::MESH_POINTS);
+                mesh->data(2, meta::autogain::MESH_POINTS);
             }
         }
 

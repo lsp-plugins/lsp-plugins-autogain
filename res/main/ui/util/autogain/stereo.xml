@@ -1,3 +1,71 @@
 <plugin resizable="true">
+	<vbox>
+		<group ui:inject="GraphGroup" ipadding.h="0" ipadding="0" expand="true" fill="true" text="labels.graphs.time">
+			<!-- Time graph -->
+			<graph width.min="560" height.min="280" expand="true">
+				<origin hpos="1" vpos="-1" visible="false"/>
 
+				<!-- Gray grid -->
+				<ui:for id="t" first="-84" last="12" step="24">
+					<marker v="${t} db" ox="1" oy="0" color="graph_alt_1"/>
+				</ui:for>
+				<ui:for id="t" first="0" last="1">
+					<marker v="${t}.25" ox="0" oy="1" color="graph_alt_2"/>
+					<marker v="${t}.5" ox="0" oy="1" color="graph_alt_1"/>
+					<marker v="${t}.75" ox="0" oy="1" color="graph_alt_2"/>
+				</ui:for>
+
+				<!-- Yellow grid -->
+				<ui:for id="t" first="-84" last="-24" step="12">
+					<marker v="${t} db" ox="1" oy="0" color="graph_sec"/>
+				</ui:for>
+				<marker v="1" ox="0" oy="1" color="graph_sec"/>
+
+				<!-- Axis -->
+				<axis min="0" max="2" color="graph_prim" angle="1.0" log="false" visibility="false"/>
+				<axis min="-84 db" max="24 db" color="graph_prim" angle="0.5" log="true" visibility="false"/>
+
+				<!-- Baseline -->
+				<marker v="0 db" ox="1" oy="0" color="graph_prim" width="2"/>
+
+				<!-- Meshes -->
+				<mesh id="gr_in" width="2" color="left_in" />
+
+				<!-- Text -->
+				<ui:with x="2" halign="1" valign="1">
+					<text y="1 db" text="graph.values.x:db" text:value="0"/>
+					<text y="12 db" text="+12" valign="1"/>
+					<text y="-84 db" text="graph.units.s" valign="1"/>
+				</ui:with>
+				<ui:for id="t" first="-72" last="-12" step="12">
+					<text y="${t} db" text="${t}" x="2" halign="1" valign="1"/>
+				</ui:for>
+				<ui:for id="t" first="0" last="1" step="1">
+					<text y="-84 db" text="${t}" x="${t}" halign="-1" valign="1"/>
+					<text y="-84 db" text="${t}.25" x="${t}.25" halign="-1" valign="1"/>
+					<text y="-84 db" text="${t}.5" x="${t}.5" halign="-1" valign="1"/>
+					<text y="-84 db" text="${t}.75" x="${t}.75" halign="-1" valign="1"/>
+				</ui:for>
+
+			</graph>
+		</group>
+		
+		<!-- Bottom part -->
+		<group text="labels.plug.surge_filter" ipadding="0">
+			<grid rows="3" cols="3">
+				<!-- r1 -->
+				<label text="labels.period" pad.h="6" width.min="38"/>
+				<cell rows="3"><vsep pad.h="2" bg.color="bg" hreduce="true"/></cell>
+				<label text="labels.weighting" pad.h="6" width.min="38"/>
+				
+				<!-- r2 -->
+				<knob id="period" pad.t="4"/>
+				<combo id="weight" pad.t="4"/>
+				
+				<!-- r3 -->
+				<value id="period" width.min="32"/>
+				<void />
+			</grid>
+		</group>
+	</vbox>
 </plugin>
