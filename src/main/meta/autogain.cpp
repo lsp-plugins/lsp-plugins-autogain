@@ -53,6 +53,9 @@ namespace lsp
             BYPASS, \
             LOG_CONTROL("period", "Loudness measuring period", U_MSEC, meta::autogain::PERIOD),     \
             COMBO("weight", "Weighting function", meta::autogain::WEIGHT_DFL, weighting_modes),     \
+            CONTROL("level", "Desired loudness level", U_LUFS, meta::autogain::LEVEL),              \
+            SWITCH("e_in", "Input metering enable", 1.0f), \
+            METER_GAIN("g_in", "Input loudness meter", GAIN_AMP_P_48_DB), \
             MESH("gr_in", "Input loudness graph", 2, meta::autogain::MESH_POINTS)
 
 

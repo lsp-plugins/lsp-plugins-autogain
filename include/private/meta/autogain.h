@@ -38,6 +38,11 @@ namespace lsp
             static constexpr float  PERIOD_STEP         = 0.005f;
             static constexpr float  PERIOD_DFL          = 400.0f;
 
+            static constexpr float  LEVEL_MIN           = -60.0f;
+            static constexpr float  LEVEL_MAX           = 0.0f;
+            static constexpr float  LEVEL_STEP          = 0.05f;
+            static constexpr float  LEVEL_DFL           = -23.0f;
+
             static constexpr float  MESH_TIME           = 2.0f;
             static constexpr size_t MESH_POINTS         = 640.0f;
 

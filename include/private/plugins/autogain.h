@@ -60,11 +60,13 @@ namespace lsp
                 } channel_t;
 
             protected:
-                dspu::MeterGraph        sInGain;            // Loudness metering graph for input gain
+                dspu::MeterGraph        sInGraph;           // Loudness metering graph for input gain
                 dspu::LoudnessMeter     sMeter;             // Loudness metering tool
 
                 size_t                  nChannels;          // Number of channels
                 channel_t              *vChannels;          // Delay channels
+
+                float                   fInGain;            // Input gain meter
 
                 float                  *vBuffer;            // Buffer for temporary data
                 float                  *vTimePoints;        // Time points
@@ -72,7 +74,9 @@ namespace lsp
                 plug::IPort            *pBypass;            // Bypass
                 plug::IPort            *pPeriod;            // Metering period
                 plug::IPort            *pWeighting;         // Weighting function
-                plug::IPort            *pInGain;            // Output loudness mesh data
+                plug::IPort            *pLevel;             // Desired loudness level
+                plug::IPort            *pInGraph;           // Input loudness graph
+                plug::IPort            *pInGain;            // Input loudness meter
 
                 uint8_t                *pData;              // Allocated data
 
@@ -82,11 +86,13 @@ namespace lsp
             protected:
                 void                    do_destroy();
                 void                    bind_audio_ports();
+                void                    clean_meters();
                 void                    measure_input_loudness(size_t samples);
                 void                    update_audio_buffers(size_t samples);
                 void                    compute_gain_correction(size_t samples);
                 void                    apply_gain_correction(size_t samples);
                 void                    output_mesh_data();
+                void                    output_meters();
 
             public:
                 explicit autogain(const meta::plugin_t *meta);

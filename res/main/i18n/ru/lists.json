@@ -2,11 +2,11 @@
 	"autogain": {
 		"weighting": {
 			"none": "None",
-			"a": "IEC 61672:2003 A filter",
-			"b": "IEC 61672:2003 B filter",
-			"c": "IEC 61672:2003 C filter",
-			"d": "IEC 61672:2003 D filter",
-			"k": "ITU BS.1770-4 K filter"
+			"a": "МЭК 61672:2003 A filter",
+			"b": "МЭК 61672:2003 B filter",
+			"c": "МЭК 61672:2003 C filter",
+			"d": "МЭК 61672:2003 D filter",
+			"k": "МСЭ-Р BS.1770-4 K filter"
 		}
 	}
 }
