@@ -60,23 +60,30 @@ namespace lsp
                 } channel_t;
 
             protected:
-                dspu::MeterGraph        sInGraph;           // Loudness metering graph for input gain
-                dspu::LoudnessMeter     sMeter;             // Loudness metering tool
+                dspu::MeterGraph        sLInGraph;          // Loudness metering graph for long input gain
+                dspu::MeterGraph        sSInGraph;          // Loudness metering graph for short input gain
+                dspu::LoudnessMeter     sLMeter;            // Loudness metering tool for long period
+                dspu::LoudnessMeter     sSMeter;            // Loudness metering tool for short period
 
                 size_t                  nChannels;          // Number of channels
                 channel_t              *vChannels;          // Delay channels
 
-                float                   fInGain;            // Input gain meter
+                float                   fLInGain;           // Input gain meter for long period
+                float                   fSInGain;           // Input gain meter for short period
 
-                float                  *vBuffer;            // Buffer for temporary data
+                float                  *vLBuffer;           // Buffer for long input gain
+                float                  *vSBuffer;           // Buffer for short input gain
                 float                  *vTimePoints;        // Time points
 
                 plug::IPort            *pBypass;            // Bypass
-                plug::IPort            *pPeriod;            // Metering period
+                plug::IPort            *pLPeriod;           // Metering long period
+                plug::IPort            *pSPeriod;           // Metering short period
                 plug::IPort            *pWeighting;         // Weighting function
                 plug::IPort            *pLevel;             // Desired loudness level
-                plug::IPort            *pInGraph;           // Input loudness graph
-                plug::IPort            *pInGain;            // Input loudness meter
+                plug::IPort            *pLInGraph;          // Input loudness graph for long period
+                plug::IPort            *pSInGraph;          // Input loudness graph for short period
+                plug::IPort            *pLInGain;           // Input loudness meter for long period
+                plug::IPort            *pSInGain;           // Input loudness meter for long period
 
                 uint8_t                *pData;              // Allocated data
 

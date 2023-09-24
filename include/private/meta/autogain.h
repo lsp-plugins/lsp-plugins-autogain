@@ -33,10 +33,15 @@ namespace lsp
     {
         typedef struct autogain
         {
-            static constexpr float  PERIOD_MIN          = 10.0f;
-            static constexpr float  PERIOD_MAX          = 2000.0f;
-            static constexpr float  PERIOD_STEP         = 0.005f;
-            static constexpr float  PERIOD_DFL          = 400.0f;
+            static constexpr float  LONG_PERIOD_MIN     = 100.0f;
+            static constexpr float  LONG_PERIOD_MAX     = 2000.0f;
+            static constexpr float  LONG_PERIOD_STEP    = 0.005f;
+            static constexpr float  LONG_PERIOD_DFL     = 400.0f;
+
+            static constexpr float  SHORT_PERIOD_MIN    = 5.0f;
+            static constexpr float  SHORT_PERIOD_MAX    = 100.0f;
+            static constexpr float  SHORT_PERIOD_STEP   = 0.0025f;
+            static constexpr float  SHORT_PERIOD_DFL    = 20.0f;
 
             static constexpr float  LEVEL_MIN           = -60.0f;
             static constexpr float  LEVEL_MAX           = 0.0f;

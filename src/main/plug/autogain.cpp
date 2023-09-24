@@ -69,17 +69,22 @@ namespace lsp
             // Initialize other parameters
             vChannels       = NULL;
 
-            fInGain         = 0.0f;
+            fLInGain        = 0.0f;
+            fSInGain        = 0.0f;
 
-            vBuffer         = NULL;
+            vLBuffer        = NULL;
+            vSBuffer        = NULL;
             vTimePoints     = NULL;
 
             pBypass         = NULL;
-            pPeriod         = NULL;
+            pLPeriod        = NULL;
+            pSPeriod        = NULL;
             pWeighting      = NULL;
             pLevel          = NULL;
-            pInGain         = NULL;
-            pInGraph        = NULL;
+            pLInGain        = NULL;
+            pSInGain        = NULL;
+            pLInGraph       = NULL;
+            pSInGraph       = NULL;
 
             pData           = NULL;
         }
@@ -92,6 +97,7 @@ namespace lsp
         void autogain::init(plug::IWrapper *wrapper, plug::IPort **ports)
         {
             // Call parent class for initialization
+            status_t res;
             Module::init(wrapper, ports);
 
             // Estimate the number of bytes to allocate
@@ -99,7 +105,8 @@ namespace lsp
             size_t szof_buffer      = BUFFER_SIZE * sizeof(float);
             size_t alloc            =
                 szof_channels +     // vChannels
-                szof_buffer +       // vBuffer
+                szof_buffer +       // vLBuffer
+                szof_buffer +       // vSBuffer
                 szof_buffer +       // vTimePoints
                 nChannels * (
                     szof_buffer     // vBuffer
@@ -110,14 +117,17 @@ namespace lsp
             if (ptr == NULL)
                 return;
 
-            status_t res            = sMeter.init(nChannels, meta::autogain::PERIOD_MAX);
-            if (res != STATUS_OK)
+            if ((res = sLMeter.init(nChannels, meta::autogain::LONG_PERIOD_MAX)) != STATUS_OK)
+                return;
+            if ((res = sSMeter.init(nChannels, meta::autogain::SHORT_PERIOD_MAX)) != STATUS_OK)
                 return;
 
             // Initialize pointers to channels and temporary buffer
             vChannels               = reinterpret_cast<channel_t *>(ptr);
             ptr                    += szof_channels;
-            vBuffer                 = reinterpret_cast<float *>(ptr);
+            vLBuffer                = reinterpret_cast<float *>(ptr);
+            ptr                    += szof_buffer;
+            vSBuffer                = reinterpret_cast<float *>(ptr);
             ptr                    += szof_buffer;
             vTimePoints             = reinterpret_cast<float *>(ptr);
             ptr                    += szof_buffer;
@@ -149,12 +159,16 @@ namespace lsp
 
             // Bind bypass
             pBypass             = TRACE_PORT(ports[port_id++]);
-            pPeriod             = TRACE_PORT(ports[port_id++]);
+            pLPeriod            = TRACE_PORT(ports[port_id++]);
+            pSPeriod            = TRACE_PORT(ports[port_id++]);
             pWeighting          = TRACE_PORT(ports[port_id++]);
             pLevel              = TRACE_PORT(ports[port_id++]);
-            TRACE_PORT(ports[port_id++]); // Skip enable input gain port
-            pInGain             = TRACE_PORT(ports[port_id++]);
-            pInGraph            = TRACE_PORT(ports[port_id++]);
+            TRACE_PORT(ports[port_id++]); // Skip enable input gain port for long period
+            TRACE_PORT(ports[port_id++]); // Skip enable input gain port for short period
+            pLInGain             = TRACE_PORT(ports[port_id++]);
+            pSInGain             = TRACE_PORT(ports[port_id++]);
+            pLInGraph            = TRACE_PORT(ports[port_id++]);
+            pSInGraph            = TRACE_PORT(ports[port_id++]);
 
             // Fill values
             float k     = meta::autogain::MESH_TIME / (meta::autogain::MESH_POINTS - 1);
@@ -170,8 +184,10 @@ namespace lsp
 
         void autogain::do_destroy()
         {
-            sInGraph.destroy();
-            sMeter.destroy();
+            sLInGraph.destroy();
+            sSInGraph.destroy();
+            sLMeter.destroy();
+            sSMeter.destroy();
 
             // Destroy channels
             if (vChannels != NULL)
@@ -197,8 +213,10 @@ namespace lsp
             size_t samples_per_dot  = dspu::seconds_to_samples(
                 sr, meta::autogain::MESH_TIME / meta::autogain::MESH_POINTS);
 
-            sMeter.set_sample_rate(sr);
-            sInGraph.init(meta::autogain::MESH_POINTS, samples_per_dot);
+            sLMeter.set_sample_rate(sr);
+            sSMeter.set_sample_rate(sr);
+            sLInGraph.init(meta::autogain::MESH_POINTS, samples_per_dot);
+            sSInGraph.init(meta::autogain::MESH_POINTS, samples_per_dot);
 
             // Update sample rate for the bypass processors
             for (size_t i=0; i<nChannels; ++i)
@@ -217,7 +235,6 @@ namespace lsp
                 case meta::autogain::WEIGHT_C:  return dspu::bs::WEIGHT_C;
                 case meta::autogain::WEIGHT_D:  return dspu::bs::WEIGHT_D;
                 case meta::autogain::WEIGHT_K:  return dspu::bs::WEIGHT_K;
-
                 case meta::autogain::WEIGHT_NONE:
                 default:
                     break;
@@ -228,25 +245,36 @@ namespace lsp
 
         void autogain::update_settings()
         {
-            bool bypass             = pBypass->value() >= 0.5f;
+            bool bypass                     = pBypass->value() >= 0.5f;
+            dspu::bs::weighting_t weight    = decode_weighting(pWeighting->value());
 
             // Set measuring period
-            sMeter.set_period(pPeriod->value());
-            sMeter.set_weighting(decode_weighting(pWeighting->value()));
+            sLMeter.set_period(pLPeriod->value());
+            sSMeter.set_period(pSPeriod->value());
+
+            sLMeter.set_weighting(weight);
+            sSMeter.set_weighting(weight);
+
             if (nChannels > 1)
             {
-                sMeter.set_designation(0, dspu::bs::CHANNEL_LEFT);
-                sMeter.set_designation(1, dspu::bs::CHANNEL_RIGHT);
-                sMeter.set_link(0, 1.0f);
-                sMeter.set_link(1, 1.0f);
-                sMeter.set_active(0, true);
-                sMeter.set_active(1, true);
+                sLMeter.set_designation(0, dspu::bs::CHANNEL_LEFT);
+                sLMeter.set_designation(1, dspu::bs::CHANNEL_RIGHT);
+                sSMeter.set_designation(0, dspu::bs::CHANNEL_LEFT);
+                sSMeter.set_designation(1, dspu::bs::CHANNEL_RIGHT);
             }
             else
             {
-                sMeter.set_designation(0, dspu::bs::CHANNEL_CENTER);
-                sMeter.set_link(0, 1.0f);
-                sMeter.set_active(0, true);
+                sLMeter.set_designation(0, dspu::bs::CHANNEL_CENTER);
+                sSMeter.set_designation(0, dspu::bs::CHANNEL_CENTER);
+            }
+
+            for (size_t i=0; i<nChannels; ++i)
+            {
+                sLMeter.set_link(i, 1.0f);
+                sLMeter.set_active(i, true);
+
+                sSMeter.set_link(i, 1.0f);
+                sSMeter.set_active(i, true);
             }
 
             // Update bypass
@@ -291,7 +319,8 @@ namespace lsp
 
         void autogain::clean_meters()
         {
-            fInGain         = 0.0f;
+            fLInGain         = 0.0f;
+            fSInGain         = 0.0f;
         }
 
         void autogain::measure_input_loudness(size_t samples)
@@ -300,13 +329,17 @@ namespace lsp
             for (size_t i=0; i<nChannels; ++i)
             {
                 channel_t *c    = &vChannels[i];
-                sMeter.bind(i, NULL, c->vIn, 0);
+                sLMeter.bind(i, NULL, c->vIn, 0);
+                sSMeter.bind(i, NULL, c->vIn, 0);
             }
-            sMeter.process(vBuffer, samples, dspu::bs::DBFS_TO_LUFS_SHIFT_GAIN);
-            fInGain     = lsp_max(fInGain, dsp::max(vBuffer, samples));
 
-            // Process the loudness
-            sInGraph.process(vBuffer, samples);
+            sLMeter.process(vLBuffer, samples, dspu::bs::DBFS_TO_LUFS_SHIFT_GAIN);
+            fLInGain     = lsp_max(fLInGain, dsp::max(vLBuffer, samples));
+            sLInGraph.process(vLBuffer, samples);
+
+            sSMeter.process(vSBuffer, samples, dspu::bs::DBFS_TO_LUFS_SHIFT_GAIN);
+            fSInGain     = lsp_max(fSInGain, dsp::max(vSBuffer, samples));
+            sSInGraph.process(vSBuffer, samples);
         }
 
         void autogain::compute_gain_correction(size_t samples)
@@ -325,7 +358,6 @@ namespace lsp
             {
                 channel_t *c    = &vChannels[i];
 
-
                 // TODO: remove this after full implementation
                 dsp::copy(c->vBuffer, c->vIn, samples);
 
@@ -340,17 +372,28 @@ namespace lsp
 
         void autogain::output_meters()
         {
-            pInGain->set_value(fInGain);
+            pLInGain->set_value(fLInGain);
+            pSInGain->set_value(fSInGain);
         }
 
         void autogain::output_mesh_data()
         {
-            // Sync input gain mesh
-            plug::mesh_t *mesh    = pInGraph->buffer<plug::mesh_t>();
+            plug::mesh_t *mesh;
+
+            // Sync input gain meshes
+            mesh    = pLInGraph->buffer<plug::mesh_t>();
             if ((mesh != NULL) && (mesh->isEmpty()))
             {
                 dsp::copy(mesh->pvData[0], vTimePoints, meta::autogain::MESH_POINTS);
-                dsp::copy(mesh->pvData[1], sInGraph.data(), meta::autogain::MESH_POINTS);
+                dsp::copy(mesh->pvData[1], sLInGraph.data(), meta::autogain::MESH_POINTS);
+                mesh->data(2, meta::autogain::MESH_POINTS);
+            }
+
+            mesh    = pSInGraph->buffer<plug::mesh_t>();
+            if ((mesh != NULL) && (mesh->isEmpty()))
+            {
+                dsp::copy(mesh->pvData[0], vTimePoints, meta::autogain::MESH_POINTS);
+                dsp::copy(mesh->pvData[1], sSInGraph.data(), meta::autogain::MESH_POINTS);
                 mesh->data(2, meta::autogain::MESH_POINTS);
             }
         }

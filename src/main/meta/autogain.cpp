@@ -51,12 +51,16 @@ namespace lsp
 
         #define AUTOGAIN_COMMON \
             BYPASS, \
-            LOG_CONTROL("period", "Loudness measuring period", U_MSEC, meta::autogain::PERIOD),     \
+            LOG_CONTROL("lperiod", "Loudness measuring long period", U_MSEC, meta::autogain::LONG_PERIOD),     \
+            LOG_CONTROL("speriod", "Loudness measuring short period", U_MSEC, meta::autogain::SHORT_PERIOD),     \
             COMBO("weight", "Weighting function", meta::autogain::WEIGHT_DFL, weighting_modes),     \
             CONTROL("level", "Desired loudness level", U_LUFS, meta::autogain::LEVEL),              \
-            SWITCH("e_in", "Input metering enable", 1.0f), \
-            METER_GAIN("g_in", "Input loudness meter", GAIN_AMP_P_48_DB), \
-            MESH("gr_in", "Input loudness graph", 2, meta::autogain::MESH_POINTS)
+            SWITCH("e_in_s", "Input metering enable for short period", 1.0f), \
+            SWITCH("e_in_l", "Input metering enable for long period", 1.0f), \
+            METER_GAIN("g_in_s", "Input loudness meter for short period", GAIN_AMP_P_48_DB), \
+            METER_GAIN("g_in_l", "Input loudness meter for long period", GAIN_AMP_P_48_DB), \
+            MESH("gr_in_s", "Input loudness graph for short period", 2, meta::autogain::MESH_POINTS), \
+            MESH("gr_in_l", "Input loudness graph for long period", 2, meta::autogain::MESH_POINTS)
 
 
         static const port_t autogain_mono_ports[] =
