@@ -33,6 +33,9 @@
 				<!-- Meshes -->
 				<mesh id="gr_in_l" width="2" color="left_in" visibility=":e_in_l" />
 				<mesh id="gr_in_s" width="2" color="left_in" visibility=":e_in_s" />
+				<mesh id="gr_g" width="2" color="blue" visibility=":e_g" />
+				<mesh id="gr_out_l" width="2" color="right_in" visibility=":e_out_l" />
+				<mesh id="gr_out_s" width="2" color="right_in" visibility=":e_out_s" />
 				
 				<!-- Markers -->
 				<marker id="level" color="blue" ox="2" oy="0" editable="true" />
@@ -56,15 +59,21 @@
 			</graph>
 		</group>
 		
-		<grid rows="3" cols="2" hfill="false" hexpand="false" hspacing="4">
+		<grid rows="3" cols="5" hfill="false" hexpand="false" hspacing="4">
 			<ui:with bg.color="bg_schema">
 				<label text="labels.chan.in" padding="4"/>
 				<label text="labels.chan.in" padding="4"/>
+				<label text="labels.gain" padding="4"/>
+				<label text="labels.chan.out" padding="4"/>
+				<label text="labels.chan.out" padding="4"/>
 			</ui:with>
 
 			<ui:with bg.color="bg_schema">
-				<button id="e_in_l" height="10" width="22" ui:inject="Button_violet" led="true"/>
-				<button id="e_in_s" height="10" width="22" ui:inject="Button_violet" led="true"/>
+				<button id="e_in_l" height="10" width="22" ui:inject="left" led="true"/>
+				<button id="e_in_s" height="10" width="22" ui:inject="left" led="true"/>
+				<button id="e_g" height="10" width="22" ui:inject="Button_blue" led="true"/>
+				<button id="e_out_l" height="10" width="22" ui:inject="right" led="true"/>
+				<button id="e_out_s" height="10" width="22" ui:inject="right" led="true"/>
 			</ui:with>
 			
 			<!-- Input level meter -->
@@ -72,13 +81,31 @@
 				<ledchannel id="g_in_l"
 					min="-84 db" max="24 db" log="true"
 					type="peak" release="1"
-					activity=":e_in_l" value.color="envelope" />
+					activity=":e_in_l" value.color="left" />
 			</ledmeter>
 			<ledmeter vexpand="true" height.min="256" angle="1">
 				<ledchannel id="g_in_s"
 					min="-84 db" max="24 db" log="true"
 					type="peak" release="1"
-					activity=":e_in_s" value.color="envelope" />
+					activity=":e_in_s" value.color="left" />
+			</ledmeter>
+			<ledmeter vexpand="true" height.min="256" angle="1">
+				<ledchannel id="g_g"
+					min="-84 db" max="84 db" log="true"
+					type="peak" release="1" balance="0 db"
+					activity=":e_g" value.color="blue" />
+			</ledmeter>
+			<ledmeter vexpand="true" height.min="256" angle="1">
+				<ledchannel id="g_out_l"
+					min="-84 db" max="24 db" log="true"
+					type="peak" release="1"
+					activity=":e_out_l" value.color="right" />
+			</ledmeter>
+			<ledmeter vexpand="true" height.min="256" angle="1">
+				<ledchannel id="g_out_s"
+					min="-84 db" max="24 db" log="true"
+					type="peak" release="1"
+					activity=":e_out_s" value.color="right" />
 			</ledmeter>
 		</grid>
 		
@@ -86,25 +113,50 @@
 		<!-- Bottom part -->
 		<cell cols="2">
 			<group text="labels.plug.surge_filter" ipadding="0">
-				<grid rows="3" cols="5">
+				<grid rows="3" cols="14">
 					<!-- r1 -->
 					<label text="labels.period" pad.h="6" width.min="38"/>
 					<label text="labels.period" pad.h="6" width.min="38"/>
 					<label text="labels.weighting" pad.h="6" width.min="38"/>
 					<cell rows="3"><vsep pad.h="2" bg.color="bg" hreduce="true"/></cell>
 					<label text="labels.level" pad.h="6" width.min="38"/>
+					<label text="labels.deviation" pad.h="6" width.min="38"/>
+					<label text="labels.silence" pad.h="6" width.min="38"/>
+					<label text="labels.min_gain" pad.h="6" width.min="38"/>
+					<label text="labels.max_gain" pad.h="6" width.min="38"/>
+					<cell rows="3"><vsep pad.h="2" bg.color="bg" hreduce="true"/></cell>
+					<label text="labels.attack" pad.h="6" width.min="38"/>
+					<label text="labels.release" pad.h="6" width.min="38"/>
+					<label text="labels.attack" pad.h="6" width.min="38"/>
+					<label text="labels.release" pad.h="6" width.min="38"/>
 					
 					<!-- r2 -->
 					<knob id="lperiod" pad.t="4"/>
 					<knob id="speriod" pad.t="4"/>
 					<combo id="weight" pad.t="4"/>
 					<knob id="level" pad.t="4"/>
+					<knob id="dev" pad.t="4"/>
+					<knob id="silence" pad.t="4"/>
+					<knob id="g_min" pad.t="4"/>
+					<knob id="g_max" pad.t="4"/>
+					<knob id="att_l" pad.t="4"/>
+					<knob id="rel_l" pad.t="4"/>
+					<knob id="att_s" pad.t="4"/>
+					<knob id="rel_s" pad.t="4"/>
 					
 					<!-- r3 -->
 					<value id="lperiod" width.min="32"/>
 					<value id="speriod" width.min="32"/>
 					<void />
 					<value id="level" width.min="32"/>
+					<value id="dev" width.min="32"/>
+					<value id="silence" width.min="32"/>
+					<value id="g_min" width.min="32"/>
+					<value id="g_max" width.min="32"/>
+					<value id="att_l" width.min="32"/>
+					<value id="rel_l" width.min="32"/>
+					<value id="att_s" width.min="32"/>
+					<value id="rel_s" width.min="32"/>
 				</grid>
 			</group>
 		</cell>

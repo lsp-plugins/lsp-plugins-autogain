@@ -43,6 +43,46 @@ namespace lsp
             static constexpr float  SHORT_PERIOD_STEP   = 0.0025f;
             static constexpr float  SHORT_PERIOD_DFL    = 20.0f;
 
+            static constexpr float  LONG_ATTACK_MIN     = 0.0f;
+            static constexpr float  LONG_ATTACK_MAX     = 1000.0f;
+            static constexpr float  LONG_ATTACK_STEP    = 0.0001f;
+            static constexpr float  LONG_ATTACK_DFL     = 50.0f;
+
+            static constexpr float  SHORT_ATTACK_MIN    = 0.0f;
+            static constexpr float  SHORT_ATTACK_MAX    = 50.0f;
+            static constexpr float  SHORT_ATTACK_STEP   = 0.0001f;
+            static constexpr float  SHORT_ATTACK_DFL    = 10.0f;
+
+            static constexpr float  LONG_RELEASE_MIN   = 0.0f;
+            static constexpr float  LONG_RELEASE_MAX   = 5000.0f;
+            static constexpr float  LONG_RELEASE_STEP  = 0.0001f;
+            static constexpr float  LONG_RELEASE_DFL   = 500.0f;
+
+            static constexpr float  SHORT_RELEASE_MIN   = 0.0f;
+            static constexpr float  SHORT_RELEASE_MAX   = 200.0f;
+            static constexpr float  SHORT_RELEASE_STEP  = 0.0001f;
+            static constexpr float  SHORT_RELEASE_DFL   = 50.0f;
+
+            static constexpr float  DEVIATION_MIN       = 0.0f;
+            static constexpr float  DEVIATION_MAX       = 24.0f;
+            static constexpr float  DEVIATION_STEP      = 0.01f;
+            static constexpr float  DEVIATION_DFL       = 6.0f;
+
+            static constexpr float  SILENCE_MIN         = -120.0f;
+            static constexpr float  SILENCE_MAX         = -24.0f;
+            static constexpr float  SILENCE_STEP        = 0.01f;
+            static constexpr float  SILENCE_DFL         = -76.0f;
+
+            static constexpr float  MIN_GAIN_MIN        = -84.0f;
+            static constexpr float  MIN_GAIN_MAX        = 0.0f;
+            static constexpr float  MIN_GAIN_STEP       = 0.01f;
+            static constexpr float  MIN_GAIN_DFL        = -48.0f;
+
+            static constexpr float  MAX_GAIN_MIN        = 0.0f;
+            static constexpr float  MAX_GAIN_MAX        = 84.0f;
+            static constexpr float  MAX_GAIN_STEP       = 0.01f;
+            static constexpr float  MAX_GAIN_DFL        = 48.0f;
+
             static constexpr float  LEVEL_MIN           = -60.0f;
             static constexpr float  LEVEL_MAX           = 0.0f;
             static constexpr float  LEVEL_STEP          = 0.05f;

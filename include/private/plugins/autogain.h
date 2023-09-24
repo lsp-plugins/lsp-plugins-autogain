@@ -23,6 +23,7 @@
 #define PRIVATE_PLUGINS_AUTOGAIN_H_
 
 #include <lsp-plug.in/dsp-units/ctl/Bypass.h>
+#include <lsp-plug.in/dsp-units/dynamics/AutoGain.h>
 #include <lsp-plug.in/dsp-units/meters/LoudnessMeter.h>
 #include <lsp-plug.in/dsp-units/misc/broadcast.h>
 #include <lsp-plug.in/dsp-units/util/MeterGraph.h>
@@ -62,17 +63,29 @@ namespace lsp
             protected:
                 dspu::MeterGraph        sLInGraph;          // Loudness metering graph for long input gain
                 dspu::MeterGraph        sSInGraph;          // Loudness metering graph for short input gain
-                dspu::LoudnessMeter     sLMeter;            // Loudness metering tool for long period
-                dspu::LoudnessMeter     sSMeter;            // Loudness metering tool for short period
+                dspu::MeterGraph        sLOutGraph;         // Loudness metering graph for long output gain
+                dspu::MeterGraph        sSOutGraph;         // Loudness metering graph for short output gain
+                dspu::MeterGraph        sGainGraph;         // Gain correction graph
+                dspu::LoudnessMeter     sLInMeter;          // Input loudness metering tool for long period
+                dspu::LoudnessMeter     sSInMeter;          // Input loudness metering tool for short period
+                dspu::LoudnessMeter     sLOutMeter;         // Output loudness metering tool for long period
+                dspu::LoudnessMeter     sSOutMeter;         // Output loudness metering tool for short period
+                dspu::AutoGain          sAutoGain;          // Auto-gain
 
                 size_t                  nChannels;          // Number of channels
                 channel_t              *vChannels;          // Delay channels
 
                 float                   fLInGain;           // Input gain meter for long period
                 float                   fSInGain;           // Input gain meter for short period
+                float                   fLOutGain;          // Output gain meter for long period
+                float                   fSOutGain;          // Output gain meter for short period
+                float                   fGain;              // Gain correction meter
+                float                   fOldLevel;          // Old level value
+                float                   fLevel;             // Current level value
 
                 float                  *vLBuffer;           // Buffer for long input gain
                 float                  *vSBuffer;           // Buffer for short input gain
+                float                  *vGainBuffer;        // Buffer for gain correction
                 float                  *vTimePoints;        // Time points
 
                 plug::IPort            *pBypass;            // Bypass
@@ -80,10 +93,24 @@ namespace lsp
                 plug::IPort            *pSPeriod;           // Metering short period
                 plug::IPort            *pWeighting;         // Weighting function
                 plug::IPort            *pLevel;             // Desired loudness level
-                plug::IPort            *pLInGraph;          // Input loudness graph for long period
-                plug::IPort            *pSInGraph;          // Input loudness graph for short period
+                plug::IPort            *pDeviation;         // Deviation
+                plug::IPort            *pMinGain;           // Minimum control gain
+                plug::IPort            *pMaxGain;           // Maximum control gain
+                plug::IPort            *pSilence;           // Silence threshold
+                plug::IPort            *pLAttack;           // Long attack time
+                plug::IPort            *pLRelease;          // Long release time
+                plug::IPort            *pSAttack;           // Short attack time
+                plug::IPort            *pSRelease;          // Short release time
                 plug::IPort            *pLInGain;           // Input loudness meter for long period
                 plug::IPort            *pSInGain;           // Input loudness meter for long period
+                plug::IPort            *pLOutGain;          // Output loudness meter for long period
+                plug::IPort            *pSOutGain;          // Output loudness meter for long period
+                plug::IPort            *pGain;              // Gain correction level
+                plug::IPort            *pLInGraph;          // Input loudness graph for long period
+                plug::IPort            *pSInGraph;          // Input loudness graph for short period
+                plug::IPort            *pLOutGraph;         // Output loudness graph for long period
+                plug::IPort            *pSOutGraph;         // Output loudness graph for short period
+                plug::IPort            *pGainGraph;         // Gain correction graph
 
                 uint8_t                *pData;              // Allocated data
 

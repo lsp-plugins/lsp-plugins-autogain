@@ -51,16 +51,36 @@ namespace lsp
 
         #define AUTOGAIN_COMMON \
             BYPASS, \
-            LOG_CONTROL("lperiod", "Loudness measuring long period", U_MSEC, meta::autogain::LONG_PERIOD),     \
-            LOG_CONTROL("speriod", "Loudness measuring short period", U_MSEC, meta::autogain::SHORT_PERIOD),     \
-            COMBO("weight", "Weighting function", meta::autogain::WEIGHT_DFL, weighting_modes),     \
-            CONTROL("level", "Desired loudness level", U_LUFS, meta::autogain::LEVEL),              \
+            LOG_CONTROL("lperiod", "Loudness measuring long period", U_MSEC, meta::autogain::LONG_PERIOD), \
+            LOG_CONTROL("speriod", "Loudness measuring short period", U_MSEC, meta::autogain::SHORT_PERIOD), \
+            COMBO("weight", "Weighting function", meta::autogain::WEIGHT_DFL, weighting_modes), \
+            CONTROL("level", "Desired loudness level", U_LUFS, meta::autogain::LEVEL), \
+            CONTROL("dev", "Level deviation", U_DB, meta::autogain::DEVIATION), \
+            CONTROL("silence", "The level of silence", U_LUFS, meta::autogain::SILENCE), \
+            CONTROL("g_min", "Minimum control gain", U_DB, meta::autogain::MIN_GAIN), \
+            CONTROL("g_max", "Maximum control gain", U_DB, meta::autogain::MAX_GAIN), \
+            LOG_CONTROL("att_l", "Long attack time", U_MSEC, meta::autogain::LONG_ATTACK), \
+            LOG_CONTROL("rel_l", "Long release time", U_MSEC, meta::autogain::LONG_RELEASE), \
+            LOG_CONTROL("att_s", "Short attack time", U_MSEC, meta::autogain::SHORT_ATTACK), \
+            LOG_CONTROL("rel_s", "Short release time", U_MSEC, meta::autogain::SHORT_RELEASE), \
+            \
             SWITCH("e_in_s", "Input metering enable for short period", 1.0f), \
             SWITCH("e_in_l", "Input metering enable for long period", 1.0f), \
+            SWITCH("e_out_s", "Output metering enable for short period", 1.0f), \
+            SWITCH("e_out_l", "Output metering enable for long period", 1.0f), \
+            SWITCH("e_g", "Gain correction metering", 1.0f), \
+            \
             METER_GAIN("g_in_s", "Input loudness meter for short period", GAIN_AMP_P_48_DB), \
             METER_GAIN("g_in_l", "Input loudness meter for long period", GAIN_AMP_P_48_DB), \
+            METER_GAIN("g_out_s", "Output loudness meter for short period", GAIN_AMP_P_48_DB), \
+            METER_GAIN("g_out_l", "Output loudness meter for long period", GAIN_AMP_P_48_DB), \
+            METER_GAIN("g_g", "Gain correction meter", GAIN_AMP_P_120_DB), \
+            \
             MESH("gr_in_s", "Input loudness graph for short period", 2, meta::autogain::MESH_POINTS), \
-            MESH("gr_in_l", "Input loudness graph for long period", 2, meta::autogain::MESH_POINTS)
+            MESH("gr_in_l", "Input loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
+            MESH("gr_out_s", "Output loudness graph for short period", 2, meta::autogain::MESH_POINTS), \
+            MESH("gr_out_l", "Output loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
+            MESH("gr_g", "Gain correction graph", 2, meta::autogain::MESH_POINTS)
 
 
         static const port_t autogain_mono_ports[] =
