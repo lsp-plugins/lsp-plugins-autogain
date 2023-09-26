@@ -26,6 +26,7 @@
 #include <lsp-plug.in/dsp-units/dynamics/AutoGain.h>
 #include <lsp-plug.in/dsp-units/meters/LoudnessMeter.h>
 #include <lsp-plug.in/dsp-units/misc/broadcast.h>
+#include <lsp-plug.in/dsp-units/util/Delay.h>
 #include <lsp-plug.in/dsp-units/util/MeterGraph.h>
 #include <lsp-plug.in/plug-fw/plug.h>
 #include <private/meta/autogain.h>
@@ -51,6 +52,7 @@ namespace lsp
                 {
                     // DSP processing modules
                     dspu::Bypass            sBypass;            // Bypass
+                    dspu::Delay             sDelay;             // Delay
 
                     float                  *vIn;                // Input signal
                     float                  *vOut;               // Output signal

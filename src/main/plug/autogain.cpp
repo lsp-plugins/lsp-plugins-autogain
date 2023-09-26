@@ -74,8 +74,8 @@ namespace lsp
             fLOutGain       = 0.0f;
             fSOutGain       = 0.0f;
             fGain           = 0.0f;
-            fOldLevel       = meta::autogain::LEVEL_DFL;
-            fLevel          = meta::autogain::LEVEL_DFL;
+            fOldLevel       = dspu::lufs_to_gain(meta::autogain::LEVEL_DFL);
+            fLevel          = dspu::lufs_to_gain(meta::autogain::LEVEL_DFL);
 
             vLBuffer        = NULL;
             vSBuffer        = NULL;
@@ -146,6 +146,8 @@ namespace lsp
                 return;
             if ((res = sSOutMeter.init(nChannels, meta::autogain::SHORT_PERIOD_MAX)) != STATUS_OK)
                 return;
+            if ((res = sAutoGain.init(meta::autogain::SHORT_ATTACK_MAX)) != STATUS_OK)
+                return;
 
             // Initialize pointers to channels and temporary buffer
             vChannels               = reinterpret_cast<channel_t *>(ptr);
@@ -164,6 +166,7 @@ namespace lsp
                 channel_t *c            = &vChannels[i];
 
                 c->sBypass.construct();
+                c->sDelay.construct();
 
                 c->vBuffer              = reinterpret_cast<float *>(ptr);
                 ptr                    += szof_buffer;
@@ -276,10 +279,15 @@ namespace lsp
             sLOutMeter.set_sample_rate(sr);
             sSOutMeter.set_sample_rate(sr);
 
+            sAutoGain.set_sample_rate(sr);
+
+            size_t max_delay = dspu::millis_to_samples(sr, meta::autogain::SHORT_ATTACK_MAX);
+
             // Update sample rate for the bypass processors
             for (size_t i=0; i<nChannels; ++i)
             {
                 channel_t *c    = &vChannels[i];
+                c->sDelay.init(max_delay);
                 c->sBypass.init(sr);
             }
         }
@@ -323,6 +331,8 @@ namespace lsp
                 pLRelease->value());
             sAutoGain.set_silence_threshold(
                 dspu::lufs_to_gain(pSilence->value()));
+            sAutoGain.set_lookback(pSAttack->value() * 0.5f);
+            size_t latency                  = 0; //sAutoGain.latency();
 
             // Set measuring period
             float l_period                  = pLPeriod->value();
@@ -378,8 +388,12 @@ namespace lsp
             for (size_t i=0; i<nChannels; ++i)
             {
                 channel_t *c            = &vChannels[i];
+                c->sDelay.set_delay(0);
                 c->sBypass.set_bypass(bypass);
             }
+
+            // Report latency
+            set_latency(latency);
         }
 
         void autogain::process(size_t samples)
@@ -488,6 +502,7 @@ namespace lsp
 
                 // TODO: remove this
 //                dsp::copy(c->vBuffer, c->vIn, samples);
+                c->sDelay.process(c->vBuffer, c->vBuffer, samples);
 
                 // Apply bypass
                 c->sBypass.process(c->vOut, c->vIn, c->vBuffer, samples);
