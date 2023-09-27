@@ -40,6 +40,8 @@ namespace lsp
 
     namespace plugins
     {
+        static const uint8_t gain_numerators[] = { 1, 3, 6, 9, 10, 12, 15, 18, 20, 21, 24 };
+
         //---------------------------------------------------------------------
         // Plugin factory
         static const meta::plugin_t *plugins[] =
@@ -91,10 +93,14 @@ namespace lsp
             pMinGain        = NULL;
             pMaxGain        = NULL;
             pSilence        = NULL;
-            pLAttack        = NULL;
-            pLRelease       = NULL;
-            pSAttack        = NULL;
-            pSRelease       = NULL;
+
+            for (size_t i=0; i<GCT_TOTAL; ++i)
+            {
+                gcontrol_t *gc  = &vGainCtl[i];
+                gc->pValue      = NULL;
+                gc->pPeroid     = NULL;
+            }
+
             pLInGain        = NULL;
             pSInGain        = NULL;
             pLOutGain       = NULL;
@@ -146,7 +152,7 @@ namespace lsp
                 return;
             if ((res = sSOutMeter.init(nChannels, meta::autogain::SHORT_PERIOD_MAX)) != STATUS_OK)
                 return;
-            if ((res = sAutoGain.init(meta::autogain::SHORT_ATTACK_MAX)) != STATUS_OK)
+            if ((res = sAutoGain.init(1000)) != STATUS_OK)
                 return;
 
             // Initialize pointers to channels and temporary buffer
@@ -197,10 +203,16 @@ namespace lsp
             pSilence            = TRACE_PORT(ports[port_id++]);
             pMinGain            = TRACE_PORT(ports[port_id++]);
             pMaxGain            = TRACE_PORT(ports[port_id++]);
-            pLAttack            = TRACE_PORT(ports[port_id++]);
-            pLRelease           = TRACE_PORT(ports[port_id++]);
-            pSAttack            = TRACE_PORT(ports[port_id++]);
-            pSRelease           = TRACE_PORT(ports[port_id++]);
+
+            lsp_trace("Binding gain controls");
+            for (size_t i=0; i<GCT_TOTAL; ++i)
+            {
+                gcontrol_t *gc  = &vGainCtl[i];
+                gc->pValue      = TRACE_PORT(ports[port_id++]);
+                gc->pPeroid     = TRACE_PORT(ports[port_id++]);
+            }
+
+            lsp_trace("Binding metering controls");
             TRACE_PORT(ports[port_id++]); // Skip enable input gain port for long period
             TRACE_PORT(ports[port_id++]); // Skip enable input gain port for short period
             TRACE_PORT(ports[port_id++]); // Skip enable output gain port for long period
@@ -250,6 +262,7 @@ namespace lsp
                 for (size_t i=0; i<nChannels; ++i)
                 {
                     channel_t *c    = &vChannels[i];
+                    c->sDelay.destroy();
                     c->sBypass.destroy();
                 }
                 vChannels   = NULL;
@@ -281,7 +294,7 @@ namespace lsp
 
             sAutoGain.set_sample_rate(sr);
 
-            size_t max_delay = dspu::millis_to_samples(sr, meta::autogain::SHORT_ATTACK_MAX);
+            size_t max_delay = dspu::millis_to_samples(sr, 1000);
 
             // Update sample rate for the bypass processors
             for (size_t i=0; i<nChannels; ++i)
@@ -309,6 +322,18 @@ namespace lsp
             return dspu::bs::WEIGHT_NONE;
         }
 
+        float autogain::calc_gain_speed(gcontrol_type_t type)
+        {
+            gcontrol_t *gc  = &vGainCtl[type];
+
+            size_t numerator= size_t(gc->pValue->value());
+            size_t idx      = lsp_limit(numerator, 0U, (sizeof(gain_numerators)/sizeof(gain_numerators[0])) - 1);
+            float fnum      = gain_numerators[idx];
+            float time      = gc->pPeroid->value() * 0.001f;
+
+            return fnum / time ; // Return value in dB/s
+        }
+
         void autogain::update_settings()
         {
             bool bypass                     = pBypass->value() >= 0.5f;
@@ -323,15 +348,15 @@ namespace lsp
             sAutoGain.set_gain(
                 dspu::db_to_gain(pMinGain->value()),
                 dspu::db_to_gain(pMaxGain->value()));
-            sAutoGain.set_short_timing(
-                pSAttack->value(),
-                pSRelease->value());
-            sAutoGain.set_long_timing(
-                pLAttack->value(),
-                pLRelease->value());
+            sAutoGain.set_long_speed(
+                calc_gain_speed(GCT_LONG_GROW),
+                calc_gain_speed(GCT_LONG_FALL));
+            sAutoGain.set_short_speed(
+                calc_gain_speed(GCT_SHORT_GROW),
+                calc_gain_speed(GCT_SHORT_FALL));
             sAutoGain.set_silence_threshold(
                 dspu::lufs_to_gain(pSilence->value()));
-            sAutoGain.set_lookback(pSAttack->value() * 0.5f);
+//            sAutoGain.set_lookback(pSAttack->value() * 0.5f);
             size_t latency                  = 0; //sAutoGain.latency();
 
             // Set measuring period

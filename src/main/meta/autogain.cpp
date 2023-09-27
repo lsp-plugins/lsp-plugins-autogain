@@ -38,6 +38,22 @@ namespace lsp
 {
     namespace meta
     {
+        static const port_item_t speed_numerators[] =
+        {
+            { "1 dB",           "autogain.numerator.1db"    },
+            { "3 dB",           "autogain.numerator.3db"    },
+            { "6 dB",           "autogain.numerator.6db"    },
+            { "9 dB",           "autogain.numerator.9db"    },
+            { "10 dB",          "autogain.numerator.10db"   },
+            { "12 dB",          "autogain.numerator.12db"   },
+            { "15 dB",          "autogain.numerator.15db"   },
+            { "18 dB",          "autogain.numerator.18db"   },
+            { "20 dB",          "autogain.numerator.20db"   },
+            { "21 dB",          "autogain.numerator.21db"   },
+            { "24 dB",          "autogain.numerator.24db"   },
+            { NULL, NULL }
+        };
+
         static const port_item_t weighting_modes[] =
         {
             { "None",           "autogain.weighting.none"   },
@@ -59,10 +75,15 @@ namespace lsp
             CONTROL("silence", "The level of silence", U_LUFS, meta::autogain::SILENCE), \
             CONTROL("g_min", "Minimum control gain", U_DB, meta::autogain::MIN_GAIN), \
             CONTROL("g_max", "Maximum control gain", U_DB, meta::autogain::MAX_GAIN), \
-            LOG_CONTROL("att_l", "Long attack time", U_MSEC, meta::autogain::LONG_ATTACK), \
-            LOG_CONTROL("rel_l", "Long release time", U_MSEC, meta::autogain::LONG_RELEASE), \
-            LOG_CONTROL("att_s", "Short attack time", U_MSEC, meta::autogain::SHORT_ATTACK), \
-            LOG_CONTROL("rel_s", "Short release time", U_MSEC, meta::autogain::SHORT_RELEASE), \
+            \
+            COMBO("vgrow_l", "Long gain grow amount", meta::autogain::NOM_DFL, speed_numerators), \
+            LOG_CONTROL("tgrow_l", "Long gain grow time", U_MSEC, meta::autogain::LONG_GROW), \
+            COMBO("vfall_l", "Long gain fall amount", meta::autogain::NOM_DFL, speed_numerators), \
+            LOG_CONTROL("tfall_l", "Long gain fall time", U_MSEC, meta::autogain::LONG_FALL), \
+            COMBO("vgrow_s", "Short gain grow amount", meta::autogain::NOM_DFL, speed_numerators), \
+            LOG_CONTROL("tgrow_s", "Short gain grow time", U_MSEC, meta::autogain::SHORT_GROW), \
+            COMBO("vfall_s", "Short gain fall amount", meta::autogain::NOM_DFL, speed_numerators), \
+            LOG_CONTROL("tfall_s", "Short gain fall time", U_MSEC, meta::autogain::SHORT_FALL), \
             \
             SWITCH("e_in_s", "Input metering enable for short period", 1.0f), \
             SWITCH("e_in_l", "Input metering enable for long period", 1.0f), \

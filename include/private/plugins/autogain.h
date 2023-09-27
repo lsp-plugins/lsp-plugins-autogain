@@ -48,6 +48,22 @@ namespace lsp
                     CD_X2_STEREO
                 };
 
+                enum gcontrol_type_t
+                {
+                    GCT_LONG_GROW,
+                    GCT_LONG_FALL,
+                    GCT_SHORT_GROW,
+                    GCT_SHORT_FALL,
+
+                    GCT_TOTAL
+                };
+
+                typedef struct gcontrol_t
+                {
+                    plug::IPort            *pValue;             // Numerator of the gain speed
+                    plug::IPort            *pPeroid;            // Denominator of the gain speed
+                } gcontrol_t;
+
                 typedef struct channel_t
                 {
                     // DSP processing modules
@@ -99,10 +115,7 @@ namespace lsp
                 plug::IPort            *pMinGain;           // Minimum control gain
                 plug::IPort            *pMaxGain;           // Maximum control gain
                 plug::IPort            *pSilence;           // Silence threshold
-                plug::IPort            *pLAttack;           // Long attack time
-                plug::IPort            *pLRelease;          // Long release time
-                plug::IPort            *pSAttack;           // Short attack time
-                plug::IPort            *pSRelease;          // Short release time
+                gcontrol_t              vGainCtl[GCT_TOTAL];// Gain controls
                 plug::IPort            *pLInGain;           // Input loudness meter for long period
                 plug::IPort            *pSInGain;           // Input loudness meter for long period
                 plug::IPort            *pLOutGain;          // Output loudness meter for long period
@@ -129,6 +142,7 @@ namespace lsp
                 void                    apply_gain_correction(size_t samples);
                 void                    output_mesh_data();
                 void                    output_meters();
+                inline float            calc_gain_speed(gcontrol_type_t type);
 
             public:
                 explicit autogain(const meta::plugin_t *meta);

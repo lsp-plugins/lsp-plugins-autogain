@@ -1,5 +1,18 @@
 {
 	"autogain": {
+		"numerator": {
+			"1db": "1 dB",
+			"10db": "10 dB",
+			"12db": "12 dB",
+			"15db": "15 dB",
+			"18db": "18 dB",
+			"20db": "20 dB",
+			"21db": "21 dB",
+			"24db": "24 dB",
+			"3db": "3 dB",
+			"6db": "6 dB",
+			"9db": "9 dB"
+		},
 		"weighting": {
 			"none": "None",
 			"a": "IEC 61672:2003 A filter",
