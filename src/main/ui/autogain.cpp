@@ -31,10 +31,12 @@ namespace lsp
         static const meta::plugin_t *plugin_uis[] =
         {
             &meta::autogain_mono,
-            &meta::autogain_stereo
+            &meta::autogain_stereo,
+            &meta::sc_autogain_mono,
+            &meta::sc_autogain_stereo
         };
 
-        static ui::Factory factory(plugin_uis, 2);
+        static ui::Factory factory(plugin_uis, 4);
 
     } /* namespace plugui */
 } /* namespace lsp */

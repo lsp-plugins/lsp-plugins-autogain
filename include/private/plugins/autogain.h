@@ -71,10 +71,12 @@ namespace lsp
                     dspu::Delay             sDelay;             // Delay
 
                     float                  *vIn;                // Input signal
+                    float                  *vScIn;              // Sidechain input
                     float                  *vOut;               // Output signal
                     float                  *vBuffer;            // Temporary buffer for audio processing
 
                     plug::IPort            *pIn;                // Input port
+                    plug::IPort            *pScIn;              // Sidechain input port
                     plug::IPort            *pOut;               // Output port
                 } channel_t;
 
@@ -91,6 +93,8 @@ namespace lsp
                 dspu::AutoGain          sAutoGain;          // Auto-gain
 
                 size_t                  nChannels;          // Number of channels
+                size_t                  enScMode;           // Sidechain mode
+                bool                    bSidechain;         // Sidechain is available
                 channel_t              *vChannels;          // Delay channels
 
                 float                   fLInGain;           // Input gain meter for long period
@@ -100,6 +104,8 @@ namespace lsp
                 float                   fGain;              // Gain correction meter
                 float                   fOldLevel;          // Old level value
                 float                   fLevel;             // Current level value
+                float                   fOldPreamp;         // Old sidechain preamp
+                float                   fPreamp;            // Actual sidechain preamp
 
                 float                  *vLBuffer;           // Buffer for long input gain
                 float                  *vSBuffer;           // Buffer for short input gain
@@ -107,23 +113,25 @@ namespace lsp
                 float                  *vTimePoints;        // Time points
 
                 plug::IPort            *pBypass;            // Bypass
+                plug::IPort            *pScMode;            // Sidechain mode
+                plug::IPort            *pScPreamp;          // Sidechain preamp
+                plug::IPort            *pLookahead;         // Lookahead
                 plug::IPort            *pLPeriod;           // Metering long period
                 plug::IPort            *pSPeriod;           // Metering short period
                 plug::IPort            *pWeighting;         // Weighting function
                 plug::IPort            *pLevel;             // Desired loudness level
                 plug::IPort            *pDeviation;         // Deviation
-                plug::IPort            *pMinGain;           // Minimum control gain
-                plug::IPort            *pMaxGain;           // Maximum control gain
                 plug::IPort            *pSilence;           // Silence threshold
+                plug::IPort            *pQAmp;              // Quick amplifier option
                 gcontrol_t              vGainCtl[GCT_TOTAL];// Gain controls
                 plug::IPort            *pLInGain;           // Input loudness meter for long period
-                plug::IPort            *pSInGain;           // Input loudness meter for long period
                 plug::IPort            *pLOutGain;          // Output loudness meter for long period
+                plug::IPort            *pSInGain;           // Input loudness meter for long period
                 plug::IPort            *pSOutGain;          // Output loudness meter for long period
                 plug::IPort            *pGain;              // Gain correction level
                 plug::IPort            *pLInGraph;          // Input loudness graph for long period
-                plug::IPort            *pSInGraph;          // Input loudness graph for short period
                 plug::IPort            *pLOutGraph;         // Output loudness graph for long period
+                plug::IPort            *pSInGraph;          // Input loudness graph for short period
                 plug::IPort            *pSOutGraph;         // Output loudness graph for short period
                 plug::IPort            *pGainGraph;         // Gain correction graph
 

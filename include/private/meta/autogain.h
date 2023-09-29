@@ -33,6 +33,16 @@ namespace lsp
     {
         typedef struct autogain
         {
+            static constexpr float  SC_PREAMP_MIN       = -60.0f;
+            static constexpr float  SC_PREAMP_MAX       = 40.0f;
+            static constexpr float  SC_PREAMP_STEP      = 0.05f;
+            static constexpr float  SC_PREAMP_DFL       = 0.0f;
+
+            static constexpr float  SC_LOOKAHEAD_MIN    = 0.0f;
+            static constexpr float  SC_LOOKAHEAD_MAX    = 40.0f;
+            static constexpr float  SC_LOOKAHEAD_STEP   = 0.01f;
+            static constexpr float  SC_LOOKAHEAD_DFL    = 0.0f;
+
             static constexpr float  LONG_PERIOD_MIN     = 100.0f;
             static constexpr float  LONG_PERIOD_MAX     = 2000.0f;
             static constexpr float  LONG_PERIOD_STEP    = 0.005f;
@@ -51,9 +61,9 @@ namespace lsp
             static constexpr float  LONG_FALL_MIN       = 10.0f;
             static constexpr float  LONG_FALL_MAX       = 10000.0f;
             static constexpr float  LONG_FALL_STEP      = 0.001f;
-            static constexpr float  LONG_FALL_DFL       = 50.0f;
+            static constexpr float  LONG_FALL_DFL       = 500.0f;
 
-            static constexpr float  SHORT_GROW_MIN      = 10.0f;
+            static constexpr float  SHORT_GROW_MIN      = 1.0f;
             static constexpr float  SHORT_GROW_MAX      = 1000.0f;
             static constexpr float  SHORT_GROW_STEP     = 0.001f;
             static constexpr float  SHORT_GROW_DFL      = 200.0f;
@@ -68,10 +78,10 @@ namespace lsp
             static constexpr float  DEVIATION_STEP      = 0.01f;
             static constexpr float  DEVIATION_DFL       = 12.0f;
 
-            static constexpr float  SILENCE_MIN         = -120.0f;
-            static constexpr float  SILENCE_MAX         = -24.0f;
+            static constexpr float  SILENCE_MIN         = -84.0f;
+            static constexpr float  SILENCE_MAX         = -36.0f;
             static constexpr float  SILENCE_STEP        = 0.01f;
-            static constexpr float  SILENCE_DFL         = -76.0f;
+            static constexpr float  SILENCE_DFL         = -72.0f;
 
             static constexpr float  MIN_GAIN_MIN        = -84.0f;
             static constexpr float  MIN_GAIN_MAX        = 0.0f;
@@ -122,11 +132,22 @@ namespace lsp
                 NOM_DFL = NOM_12DB
             };
 
+            enum scmode_t
+            {
+                SCMODE_INTERNAL,
+                SCMODE_CONTROL,
+                SCMODE_MATCH,
+
+                SCMODE_DFL = SCMODE_INTERNAL
+            };
+
         } autogain;
 
         // Plugin type metadata
         extern const plugin_t autogain_mono;
         extern const plugin_t autogain_stereo;
+        extern const plugin_t sc_autogain_mono;
+        extern const plugin_t sc_autogain_stereo;
 
     } /* namespace meta */
 } /* namespace lsp */

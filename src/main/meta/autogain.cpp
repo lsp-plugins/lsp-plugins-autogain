@@ -38,6 +38,14 @@ namespace lsp
 {
     namespace meta
     {
+        static const port_item_t sc_modes[] =
+        {
+            { "Internal",       "autogain.sc.internal"      },
+            { "Control",        "autogain.sc.control"       },
+            { "Match",          "autogain.sc.match"         },
+            { NULL, NULL }
+        };
+
         static const port_item_t speed_numerators[] =
         {
             { "1 dB",           "autogain.numerator.1db"    },
@@ -65,17 +73,23 @@ namespace lsp
             { NULL, NULL }
         };
 
+        #define AUTOGAIN_INT_SC \
+            CONTROL("preamp", "Sidechain preamp", U_DB, meta::autogain::SC_PREAMP), \
+            CONTROL("lkahead", "Sidechain lookahead", U_MSEC, meta::autogain::SC_LOOKAHEAD)
+
+        #define AUTOGAIN_EXT_SC \
+            COMBO("scmode", "Sidechain mode", meta::autogain::SCMODE_DFL, sc_modes), \
+            AUTOGAIN_INT_SC
+
         #define AUTOGAIN_COMMON \
-            BYPASS, \
             LOG_CONTROL("lperiod", "Loudness measuring long period", U_MSEC, meta::autogain::LONG_PERIOD), \
             LOG_CONTROL("speriod", "Loudness measuring short period", U_MSEC, meta::autogain::SHORT_PERIOD), \
             COMBO("weight", "Weighting function", meta::autogain::WEIGHT_DFL, weighting_modes), \
             CONTROL("level", "Desired loudness level", U_LUFS, meta::autogain::LEVEL), \
-            CONTROL("dev", "Level deviation", U_DB, meta::autogain::DEVIATION), \
+            CONTROL("drift", "Level drift", U_DB, meta::autogain::DEVIATION), \
             CONTROL("silence", "The level of silence", U_LUFS, meta::autogain::SILENCE), \
-            CONTROL("g_min", "Minimum control gain", U_DB, meta::autogain::MIN_GAIN), \
-            CONTROL("g_max", "Maximum control gain", U_DB, meta::autogain::MAX_GAIN), \
             \
+            SWITCH("qamp", "Enable quick amplifier", 0.0f), \
             COMBO("vgrow_l", "Long gain grow amount", meta::autogain::NOM_DFL, speed_numerators), \
             LOG_CONTROL("tgrow_l", "Long gain grow time", U_MSEC, meta::autogain::LONG_GROW), \
             COMBO("vfall_l", "Long gain fall amount", meta::autogain::NOM_DFL, speed_numerators), \
@@ -85,28 +99,30 @@ namespace lsp
             COMBO("vfall_s", "Short gain fall amount", meta::autogain::NOM_DFL, speed_numerators), \
             LOG_CONTROL("tfall_s", "Short gain fall time", U_MSEC, meta::autogain::SHORT_FALL), \
             \
-            SWITCH("e_in_s", "Input metering enable for short period", 1.0f), \
             SWITCH("e_in_l", "Input metering enable for long period", 1.0f), \
-            SWITCH("e_out_s", "Output metering enable for short period", 1.0f), \
+            SWITCH("e_in_s", "Input metering enable for short period", 1.0f), \
             SWITCH("e_out_l", "Output metering enable for long period", 1.0f), \
+            SWITCH("e_out_s", "Output metering enable for short period", 1.0f), \
             SWITCH("e_g", "Gain correction metering", 1.0f), \
             \
-            METER_GAIN("g_in_s", "Input loudness meter for short period", GAIN_AMP_P_48_DB), \
             METER_GAIN("g_in_l", "Input loudness meter for long period", GAIN_AMP_P_48_DB), \
-            METER_GAIN("g_out_s", "Output loudness meter for short period", GAIN_AMP_P_48_DB), \
             METER_GAIN("g_out_l", "Output loudness meter for long period", GAIN_AMP_P_48_DB), \
+            METER_GAIN("g_in_s", "Input loudness meter for short period", GAIN_AMP_P_48_DB), \
+            METER_GAIN("g_out_s", "Output loudness meter for short period", GAIN_AMP_P_48_DB), \
             METER_GAIN("g_g", "Gain correction meter", GAIN_AMP_P_120_DB), \
             \
-            MESH("gr_in_s", "Input loudness graph for short period", 2, meta::autogain::MESH_POINTS), \
             MESH("gr_in_l", "Input loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
-            MESH("gr_out_s", "Output loudness graph for short period", 2, meta::autogain::MESH_POINTS), \
             MESH("gr_out_l", "Output loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
+            MESH("gr_in_s", "Input loudness graph for short period", 2, meta::autogain::MESH_POINTS), \
+            MESH("gr_out_s", "Output loudness graph for short period", 2, meta::autogain::MESH_POINTS), \
             MESH("gr_g", "Gain correction graph", 2, meta::autogain::MESH_POINTS)
 
 
         static const port_t autogain_mono_ports[] =
         {
             PORTS_MONO_PLUGIN,
+            BYPASS,
+            AUTOGAIN_INT_SC,
             AUTOGAIN_COMMON,
 
             PORTS_END
@@ -115,6 +131,30 @@ namespace lsp
         static const port_t autogain_stereo_ports[] =
         {
             PORTS_STEREO_PLUGIN,
+            BYPASS,
+            AUTOGAIN_INT_SC,
+            AUTOGAIN_COMMON,
+
+            PORTS_END
+        };
+
+        static const port_t sc_autogain_mono_ports[] =
+        {
+            PORTS_MONO_PLUGIN,
+            PORTS_MONO_SIDECHAIN,
+            BYPASS,
+            AUTOGAIN_EXT_SC,
+            AUTOGAIN_COMMON,
+
+            PORTS_END
+        };
+
+        static const port_t sc_autogain_stereo_ports[] =
+        {
+            PORTS_STEREO_PLUGIN,
+            PORTS_STEREO_SIDECHAIN,
+            BYPASS,
+            AUTOGAIN_EXT_SC,
             AUTOGAIN_COMMON,
 
             PORTS_END
@@ -151,7 +191,7 @@ namespace lsp
             clap_features_mono,
             E_DUMP_STATE,
             autogain_mono_ports,
-            "util/autogain/mono.xml",
+            "util/autogain.xml",
             NULL,
             mono_plugin_port_groups,
             &autogain_bundle
@@ -175,9 +215,57 @@ namespace lsp
             clap_features_stereo,
             E_DUMP_STATE,
             autogain_stereo_ports,
-            "util/autogain/stereo.xml",
+            "util/autogain.xml",
             NULL,
             stereo_plugin_port_groups,
+            &autogain_bundle
+        };
+
+        const plugin_t sc_autogain_mono =
+        {
+            "Sidechain Autogain Mono",
+            "Sidechain Autogain Mono",
+            "SCAG1M",
+            &developers::v_sadovnikov,
+            "sc_autogain_mono",
+            LSP_LV2_URI("sc_autogain_mono"),
+            LSP_LV2UI_URI("sc_autogain_mono"),
+            "ag1M",
+            LSP_LADSPA_AUTOGAIN_BASE + 2,
+            LSP_LADSPA_URI("sc_autogain_mono"),
+            LSP_CLAP_URI("sc_autogain_mono"),
+            LSP_PLUGINS_AUTOGAIN_VERSION,
+            plugin_classes,
+            clap_features_mono,
+            E_DUMP_STATE,
+            sc_autogain_mono_ports,
+            "util/autogain.xml",
+            NULL,
+            mono_plugin_sidechain_port_groups,
+            &autogain_bundle
+        };
+
+        const plugin_t sc_autogain_stereo =
+        {
+            "Sidechain Autogain Stereo",
+            "Sidechain Autogain Stereo",
+            "SCAG1S",
+            &developers::v_sadovnikov,
+            "sc_autogain_stereo",
+            LSP_LV2_URI("sc_autogain_stereo"),
+            LSP_LV2UI_URI("sc_autogain_stereo"),
+            "ag1S",
+            LSP_LADSPA_AUTOGAIN_BASE + 3,
+            LSP_LADSPA_URI("sc_autogain_stereo"),
+            LSP_CLAP_URI("sc_autogain_stereo"),
+            LSP_PLUGINS_AUTOGAIN_VERSION,
+            plugin_classes,
+            clap_features_stereo,
+            E_DUMP_STATE,
+            sc_autogain_stereo_ports,
+            "util/autogain.xml",
+            NULL,
+            stereo_plugin_sidechain_port_groups,
             &autogain_bundle
         };
     } /* namespace meta */

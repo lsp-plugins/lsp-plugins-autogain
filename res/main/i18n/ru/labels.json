@@ -1,4 +1,8 @@
 {
+	"autogain": {
+		"long_time_processing": "Долговременная обработка",
+		"short_time_processing": "Коротковременная обработка"
+	},
 	"plug": {
 		"autogain": "Автоматический контроль уровня"
 	}

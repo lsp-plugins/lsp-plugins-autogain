@@ -13,6 +13,11 @@
 			"6db": "6 dB",
 			"9db": "9 dB"
 		},
+		"sc": {
+			"control": "Control",
+			"internal": "Internal",
+			"match": "Match"
+		},
 		"weighting": {
 			"none": "None",
 			"a": "IEC 61672:2003 A filter",

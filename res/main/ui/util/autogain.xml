@@ -1,0 +1,212 @@
+<plugin resizable="true">
+	<grid rows="3" cols="2" spacing="4">
+		<!-- Row 1 -->
+		<group ui:inject="GraphGroup" ipadding.h="0" ipadding="0" expand="true" fill="true" text="labels.graphs.time">
+			<!-- Time graph -->
+			<graph width.min="560" height.min="280" expand="true">
+				<origin hpos="1" vpos="-1" visible="false"/>
+
+				<!-- Gray grid -->
+				<ui:for id="t" first="-84" last="12" step="24">
+					<marker v="${t} db" ox="1" oy="0" color="graph_alt_1"/>
+				</ui:for>
+				<ui:for id="t" first="0" last="1">
+					<marker v="${t}.25" ox="0" oy="1" color="graph_alt_2"/>
+					<marker v="${t}.5" ox="0" oy="1" color="graph_alt_1"/>
+					<marker v="${t}.75" ox="0" oy="1" color="graph_alt_2"/>
+				</ui:for>
+
+				<!-- Yellow grid -->
+				<ui:for id="t" first="-84" last="-24" step="12">
+					<marker v="${t} db" ox="1" oy="0" color="graph_sec"/>
+				</ui:for>
+				<marker v="1" ox="0" oy="1" color="graph_sec"/>
+
+				<!-- Axis -->
+				<axis min="0" max="2" color="graph_prim" angle="1.0" log="false" visibility="false"/>
+				<axis min="-84 db" max="24 db" color="graph_prim" angle="0.5" log="true" visibility="false"/>
+				<axis min="-84" max="24" zero="-84" color="graph_prim" angle="0.5" log="false" visibility="false"/>
+
+				<!-- Baseline -->
+				<marker v="0 db" ox="1" oy="0" color="graph_prim" width="2" />
+
+				<!-- Meshes -->
+				<mesh id="gr_in_l" width="2" color="left_in" visibility=":e_in_l" />
+				<mesh id="gr_in_s" width="2" color="left_in" visibility=":e_in_s" />
+				<mesh id="gr_g" width="2" color="blue" visibility=":e_g" />
+				<mesh id="gr_out_l" width="2" color="right_in" visibility=":e_out_l" />
+				<mesh id="gr_out_s" width="2" color="right_in" visibility=":e_out_s" />
+				
+				<!-- Markers -->
+				<marker id="level" color="blue" ox="2" oy="0" editable="true" />
+				<marker id="silence" color="blue" ox="2" oy="0" editable="true" />
+
+				<!-- Text -->
+				<ui:with x="2" halign="1" valign="1">
+					<text y="1 db" text="graph.values.x:lufs" text:value="0"/>
+					<text y="12 db" text="+12" valign="1"/>
+					<text y="-84 db" text="graph.units.s" valign="1"/>
+				</ui:with>
+				<ui:for id="t" first="-72" last="-12" step="12">
+					<text y="${t} db" text="${t}" x="2" halign="1" valign="1"/>
+				</ui:for>
+				<ui:for id="t" first="0" last="1" step="1">
+					<text y="-84 db" text="${t}" x="${t}" halign="-1" valign="1"/>
+					<text y="-84 db" text="${t}.25" x="${t}.25" halign="-1" valign="1"/>
+					<text y="-84 db" text="${t}.5" x="${t}.5" halign="-1" valign="1"/>
+					<text y="-84 db" text="${t}.75" x="${t}.75" halign="-1" valign="1"/>
+				</ui:for>
+
+			</graph>
+		</group>
+		
+		<cell rows="2">
+			<grid rows="3" cols="5" hfill="false" hexpand="false" hspacing="4">
+				<ui:with bg.color="bg_schema">
+					<cell cols="2"><label text="labels.chan.in" padding="4"/></cell>
+					<label text="labels.gain" padding="4"/>
+					<cell cols="2"><label text="labels.chan.out" padding="4"/></cell>
+				</ui:with>
+	
+				<ui:with bg.color="bg_schema">
+					<button id="e_in_l" height="10" width="10" ui:inject="left" led="true"/>
+					<button id="e_in_s" height="10" width="10" ui:inject="left" led="true"/>
+					<button id="e_g" height="10" width="22" ui:inject="Button_blue" led="true"/>
+					<button id="e_out_l" height="10" width="10" ui:inject="right" led="true"/>
+					<button id="e_out_s" height="10" width="10" ui:inject="right" led="true"/>
+				</ui:with>
+				
+				<!-- Input level meter -->
+				<cell cols="2">
+					<ledmeter vexpand="true" height.min="256" angle="1">
+						<ledchannel id="g_in_l"
+							min="-84 db" max="24 db" log="true"
+							type="peak" release="1"
+							activity=":e_in_l" value.color="left" />
+						<ledchannel id="g_in_s"
+							min="-84 db" max="24 db" log="true"
+							type="peak" release="1"
+							activity=":e_in_s" value.color="left" />
+					</ledmeter>
+				</cell>
+				<ledmeter vexpand="true" height.min="256" angle="1">
+					<ledchannel id="g_g"
+						min="-84 db" max="84 db" log="true"
+						type="peak" release="1"
+						balance="0 db" balance.visibility="true"
+						activity=":e_g" value.color="blue" />
+				</ledmeter>
+				<cell cols="2">
+					<ledmeter vexpand="true" height.min="256" angle="1">
+						<ledchannel id="g_out_l"
+							min="-84 db" max="24 db" log="true"
+							type="peak" release="1"
+							activity=":e_out_l" value.color="right" />
+						<ledchannel id="g_out_s"
+							min="-84 db" max="24 db" log="true"
+							type="peak" release="1"
+							activity=":e_out_s" value.color="right" />
+					</ledmeter>
+				</cell>
+			</grid>
+		</cell>
+		
+		<!-- Row 2 -->
+		<hbox spacing="4" vexpand="false" bg.color="bg_schema" pad.h="6">
+			<label text="labels.weighting" pad.h="6" width.min="38"/>
+			<combo id="weight" pad.v="4"/>
+			
+			<void hexpand="true" />
+		</hbox>
+		
+		<!-- Row 4 -->
+		<!-- Bottom part -->
+		<cell cols="2">
+			<hbox spacing="4">
+				<group text="labels.sidechain" ipadding="0">
+					<grid rows="3" cols="3" transpose="true">
+						<!-- c1 -->
+						<ui:if test="ex :scmode">
+							<label text="labels.mode" />
+							<combo id="scmode" />
+							<void />
+						</ui:if>
+						
+						<!-- c2 -->
+						<label text="labels.preamp" />
+						<knob id="preamp" />
+						<value id="preamp" />
+
+						<!-- c3 -->						
+						<label text="labels.lookahead" />
+						<knob id="lkahead" />
+						<value id="lkahead" />
+					</grid>
+				</group>
+				<group text="labels.plug.autogain" ipadding="0">
+					<grid rows="6" cols="11">
+						<!-- r1 -->
+						<cell cols="3"><label text="labels.loudness" /></cell>
+						<cell rows="6"><vsep pad.h="2" bg.color="bg" hreduce="true"/></cell>
+						<cell cols="3"><label text="labels.autogain.long_time_processing" /></cell>
+						<cell rows="6"><vsep pad.h="2" bg.color="bg" hreduce="true"/></cell>
+						<cell cols="3"><label text="labels.autogain.short_time_processing" /></cell>
+					
+						<!-- r2 -->
+						<cell cols="3"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
+						<cell cols="3"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
+						<cell cols="3"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
+						
+						<!-- r3 -->
+						<cell rows="2"><label text="labels.metering.level" pad.h="6" width.min="38"/></cell>
+						<cell rows="2"><label text="labels.metering.drift" pad.h="6" width.min="38"/></cell>
+						<cell rows="2"><label text="labels.silence" pad.h="6" width.min="38"/></cell>
+						
+						<label text="labels.period" pad.h="6" width.min="38"/>
+						<label text="labels.metering.fall" pad.h="6" width.min="38"/>
+						<label text="labels.metering.grow" pad.h="6" width.min="38"/>
+						
+						<label text="labels.period" pad.h="6" width.min="38"/>
+						<label text="labels.metering.fall" pad.h="6" width.min="38"/>
+						<label text="labels.metering.grow" pad.h="6" width.min="38"/>
+						
+						<!-- r4 -->
+						<void />
+						<combo id="vfall_l" />
+						<combo id="vgrow_l" />
+						
+						<void />
+						<combo id="vfall_s" />
+						<combo id="vgrow_s" />
+						
+						<!-- r5 -->
+						<knob id="level" pad.t="4"/>
+						<knob id="drift" pad.t="4"/>
+						<knob id="silence" pad.t="4"/>
+						
+						<knob id="lperiod" pad.t="4"/>
+						<knob id="tfall_l" pad.t="4"/>
+						<knob id="tgrow_l" pad.t="4"/>
+						
+						<knob id="speriod" pad.t="4"/>
+						<knob id="tfall_s" pad.t="4"/>
+						<knob id="tgrow_s" pad.t="4"/>
+						
+						<!-- r6 -->
+						<value id="level" width.min="32" sline="true" />
+						<value id="drift" width.min="32" sline="true" />
+						<value id="silence" width.min="32" sline="true" />
+						
+						<value id="lperiod" width.min="32" sline="true" />
+						<value id="tfall_l" width.min="32" sline="true" />
+						<value id="tgrow_l" width.min="32" sline="true" />
+						
+						<value id="speriod" width.min="32" sline="true" />
+						<value id="tfall_s" width.min="32" sline="true" />
+						<value id="tgrow_s" width.min="32" sline="true" />
+					</grid>
+				</group>
+			</hbox>
+		</cell>
+	</grid>
+</plugin>
