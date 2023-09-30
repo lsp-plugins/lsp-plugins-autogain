@@ -64,11 +64,11 @@ namespace lsp
             static constexpr float  LONG_FALL_DFL       = 500.0f;
 
             static constexpr float  SHORT_GROW_MIN      = 1.0f;
-            static constexpr float  SHORT_GROW_MAX      = 1000.0f;
+            static constexpr float  SHORT_GROW_MAX      = 500.0f;
             static constexpr float  SHORT_GROW_STEP     = 0.001f;
-            static constexpr float  SHORT_GROW_DFL      = 200.0f;
+            static constexpr float  SHORT_GROW_DFL      = 40.0f;
 
-            static constexpr float  SHORT_FALL_MIN      = 1.0f;
+            static constexpr float  SHORT_FALL_MIN      = 0.1f;
             static constexpr float  SHORT_FALL_MAX      = 40.0f;
             static constexpr float  SHORT_FALL_STEP     = 0.001f;
             static constexpr float  SHORT_FALL_DFL      = 10.0f;
@@ -82,6 +82,11 @@ namespace lsp
             static constexpr float  SILENCE_MAX         = -36.0f;
             static constexpr float  SILENCE_STEP        = 0.01f;
             static constexpr float  SILENCE_DFL         = -72.0f;
+
+            static constexpr float  MAX_GAIN_MIN        = 0.0f;
+            static constexpr float  MAX_GAIN_MAX        = 108.0f;
+            static constexpr float  MAX_GAIN_STEP       = 0.01f;
+            static constexpr float  MAX_GAIN_DFL        = 36.0f;
 
             static constexpr float  LEVEL_MIN           = -60.0f;
             static constexpr float  LEVEL_MAX           = 0.0f;

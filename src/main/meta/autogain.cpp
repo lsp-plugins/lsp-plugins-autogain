@@ -94,6 +94,8 @@ namespace lsp
             CONTROL("level", "Desired loudness level", U_LUFS, meta::autogain::LEVEL), \
             CONTROL("drift", "Level drift", U_DB, meta::autogain::DEVIATION), \
             CONTROL("silence", "The level of silence", U_LUFS, meta::autogain::SILENCE), \
+            SWITCH("max_on", "Enable maximum amplification gain limitation", 0.0f), \
+            CONTROL("max_amp", "The maximum amplification gain", U_DB, meta::autogain::MAX_GAIN), \
             \
             SWITCH("qamp", "Enable quick amplifier", 0.0f), \
             COMBO("vgrow_l", "Long gain grow amount", meta::autogain::NOM_DFL, speed_numerators), \

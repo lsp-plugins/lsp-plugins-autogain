@@ -128,6 +128,8 @@ namespace lsp
                 plug::IPort            *pLevel;             // Desired loudness level
                 plug::IPort            *pDeviation;         // Deviation
                 plug::IPort            *pSilence;           // Silence threshold
+                plug::IPort            *pAmpOn;             // Maximum amplification gain limitation switch
+                plug::IPort            *pAmpGain;           // Maximum amplification gain
                 plug::IPort            *pQAmp;              // Quick amplifier option
                 gcontrol_t              vGainCtl[GCT_TOTAL];// Gain controls
                 plug::IPort            *pLInGain;           // Input loudness meter for long period

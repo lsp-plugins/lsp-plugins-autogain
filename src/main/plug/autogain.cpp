@@ -106,6 +106,8 @@ namespace lsp
             pLevel          = NULL;
             pDeviation      = NULL;
             pSilence        = NULL;
+            pAmpOn          = NULL;
+            pAmpGain        = NULL;
             pQAmp           = NULL;
 
             for (size_t i=0; i<GCT_TOTAL; ++i)
@@ -253,6 +255,8 @@ namespace lsp
             pLevel              = TRACE_PORT(ports[port_id++]);
             pDeviation          = TRACE_PORT(ports[port_id++]);
             pSilence            = TRACE_PORT(ports[port_id++]);
+            pAmpOn              = TRACE_PORT(ports[port_id++]);
+            pAmpGain            = TRACE_PORT(ports[port_id++]);
             pQAmp               = TRACE_PORT(ports[port_id++]);
 
             lsp_trace("Binding gain controls");
@@ -416,6 +420,9 @@ namespace lsp
             sAutoGain.set_silence_threshold(
                 dspu::lufs_to_gain(pSilence->value()));
             sAutoGain.enable_quick_amplifier(pQAmp->value() >= 0.5f);
+            sAutoGain.set_max_gain(
+                dspu::db_to_gain(pAmpGain->value()),
+                pAmpOn->value() >= 0.5f);
 
             // Set measuring period
             float l_period                  = pLPeriod->value();
