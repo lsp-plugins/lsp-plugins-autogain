@@ -78,8 +78,14 @@ namespace lsp
             CONTROL("lkahead", "Sidechain lookahead", U_MSEC, meta::autogain::SC_LOOKAHEAD)
 
         #define AUTOGAIN_EXT_SC \
+            AUTOGAIN_INT_SC, \
             COMBO("scmode", "Sidechain mode", meta::autogain::SCMODE_DFL, sc_modes), \
-            AUTOGAIN_INT_SC
+            SWITCH("e_sc_l", "Sidechain metering enable for long period", 1.0f), \
+            SWITCH("e_sc_s", "Sidechain metering enable for short period", 1.0f), \
+            METER_GAIN("g_sc_l", "Sidechain loudness meter for long period", GAIN_AMP_P_48_DB), \
+            METER_GAIN("g_sc_s", "Sidechain loudness meter for short period", GAIN_AMP_P_48_DB), \
+            MESH("gr_sc_l", "Sidechain loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
+            MESH("gr_sc_s", "Sidechain loudness graph for short period", 2, meta::autogain::MESH_POINTS)
 
         #define AUTOGAIN_COMMON \
             LOG_CONTROL("lperiod", "Loudness measuring long period", U_MSEC, meta::autogain::LONG_PERIOD), \
@@ -106,14 +112,14 @@ namespace lsp
             SWITCH("e_g", "Gain correction metering", 1.0f), \
             \
             METER_GAIN("g_in_l", "Input loudness meter for long period", GAIN_AMP_P_48_DB), \
-            METER_GAIN("g_out_l", "Output loudness meter for long period", GAIN_AMP_P_48_DB), \
             METER_GAIN("g_in_s", "Input loudness meter for short period", GAIN_AMP_P_48_DB), \
+            METER_GAIN("g_out_l", "Output loudness meter for long period", GAIN_AMP_P_48_DB), \
             METER_GAIN("g_out_s", "Output loudness meter for short period", GAIN_AMP_P_48_DB), \
             METER_GAIN("g_g", "Gain correction meter", GAIN_AMP_P_120_DB), \
             \
             MESH("gr_in_l", "Input loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
-            MESH("gr_out_l", "Output loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
             MESH("gr_in_s", "Input loudness graph for short period", 2, meta::autogain::MESH_POINTS), \
+            MESH("gr_out_l", "Output loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
             MESH("gr_out_s", "Output loudness graph for short period", 2, meta::autogain::MESH_POINTS), \
             MESH("gr_g", "Gain correction graph", 2, meta::autogain::MESH_POINTS)
 

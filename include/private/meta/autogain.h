@@ -83,18 +83,10 @@ namespace lsp
             static constexpr float  SILENCE_STEP        = 0.01f;
             static constexpr float  SILENCE_DFL         = -72.0f;
 
-            static constexpr float  MIN_GAIN_MIN        = -84.0f;
-            static constexpr float  MIN_GAIN_MAX        = 0.0f;
-            static constexpr float  MIN_GAIN_STEP       = 0.01f;
-            static constexpr float  MIN_GAIN_DFL        = -48.0f;
-
-            static constexpr float  MAX_GAIN_MIN        = 0.0f;
-            static constexpr float  MAX_GAIN_MAX        = 84.0f;
-            static constexpr float  MAX_GAIN_STEP       = 0.01f;
-            static constexpr float  MAX_GAIN_DFL        = 48.0f;
-
             static constexpr float  LEVEL_MIN           = -60.0f;
             static constexpr float  LEVEL_MAX           = 0.0f;
+            static constexpr float  LEVEL_GAIN_MIN      = GAIN_AMP_M_60_DB;
+            static constexpr float  LEVEL_GAIN_MAX      = GAIN_AMP_0_DB;
             static constexpr float  LEVEL_STEP          = 0.05f;
             static constexpr float  LEVEL_DFL           = -23.0f;
 

@@ -33,9 +33,11 @@
 				<!-- Meshes -->
 				<mesh id="gr_in_l" width="2" color="left_in" visibility=":e_in_l" />
 				<mesh id="gr_in_s" width="2" color="left_in" visibility=":e_in_s" />
-				<mesh id="gr_g" width="2" color="blue" visibility=":e_g" />
+				<mesh id="gr_sc_l" width="2" color="violet" visibility=":e_sc_l" />
+				<mesh id="gr_sc_s" width="2" color="violet" visibility=":e_sc_s" />
 				<mesh id="gr_out_l" width="2" color="right_in" visibility=":e_out_l" />
 				<mesh id="gr_out_s" width="2" color="right_in" visibility=":e_out_s" />
+				<mesh id="gr_g" width="2" color="blue" visibility=":e_g" />
 				
 				<!-- Markers -->
 				<marker id="level" color="blue" ox="2" oy="0" editable="true" />
@@ -61,34 +63,59 @@
 		</group>
 		
 		<cell rows="2">
-			<grid rows="3" cols="5" hfill="false" hexpand="false" hspacing="4">
+			<grid rows="3" cols="${ex :scmode ? 4 : 3}" hfill="false" hexpand="false" hspacing="4">
 				<ui:with bg.color="bg_schema">
-					<cell cols="2"><label text="labels.chan.in" padding="4"/></cell>
+					<label text="labels.chan.in" padding="4"/>
+					<ui:if test="ex :scmode">
+						<label text="labels.sc.SC" padding="4" />
+					</ui:if>
 					<label text="labels.gain" padding="4"/>
-					<cell cols="2"><label text="labels.chan.out" padding="4"/></cell>
+					<label text="labels.chan.out" padding="4"/>
 				</ui:with>
 	
 				<ui:with bg.color="bg_schema">
-					<button id="e_in_l" height="10" width="10" ui:inject="left" led="true"/>
-					<button id="e_in_s" height="10" width="10" ui:inject="left" led="true"/>
+					<hbox>
+						<button id="e_in_l" height="10" width="10" ui:inject="left" led="true"/>
+						<button id="e_in_s" height="10" width="10" ui:inject="left" led="true"/>
+					</hbox>               
+					<ui:if test="ex :scmode">
+						<hbox>
+							<button id="e_sc_l" height="10" width="10" ui:inject="violet" led="true" />
+							<button id="e_sc_s" height="10" width="10" ui:inject="violet" led="true" />
+						</hbox>
+					</ui:if>
 					<button id="e_g" height="10" width="22" ui:inject="Button_blue" led="true"/>
-					<button id="e_out_l" height="10" width="10" ui:inject="right" led="true"/>
-					<button id="e_out_s" height="10" width="10" ui:inject="right" led="true"/>
+					<hbox>
+						<button id="e_out_l" height="10" width="10" ui:inject="right" led="true"/>
+						<button id="e_out_s" height="10" width="10" ui:inject="right" led="true"/>
+					</hbox>
 				</ui:with>
 				
 				<!-- Input level meter -->
-				<cell cols="2">
+				<ledmeter vexpand="true" height.min="256" angle="1">
+					<ledchannel id="g_in_l"
+						min="-84 db" max="24 db" log="true"
+						type="peak" release="1"
+						activity=":e_in_l" value.color="left" />
+					<ledchannel id="g_in_s"
+						min="-84 db" max="24 db" log="true"
+						type="peak" release="1"
+						activity=":e_in_s" value.color="left" />
+				</ledmeter>
+				<!-- Sidechain level meter -->
+				<ui:if test="ex :scmode">
 					<ledmeter vexpand="true" height.min="256" angle="1">
-						<ledchannel id="g_in_l"
+						<ledchannel id="g_sc_l"
 							min="-84 db" max="24 db" log="true"
 							type="peak" release="1"
-							activity=":e_in_l" value.color="left" />
-						<ledchannel id="g_in_s"
+							activity=":e_sc_l" value.color="violet" />
+						<ledchannel id="g_sc_s"
 							min="-84 db" max="24 db" log="true"
 							type="peak" release="1"
-							activity=":e_in_s" value.color="left" />
+							activity=":e_sc_s" value.color="violet" />
 					</ledmeter>
-				</cell>
+				</ui:if>
+				<!-- Gain correction level meter -->
 				<ledmeter vexpand="true" height.min="256" angle="1">
 					<ledchannel id="g_g"
 						min="-84 db" max="84 db" log="true"
@@ -96,25 +123,29 @@
 						balance="0 db" balance.visibility="true"
 						activity=":e_g" value.color="blue" />
 				</ledmeter>
-				<cell cols="2">
-					<ledmeter vexpand="true" height.min="256" angle="1">
-						<ledchannel id="g_out_l"
-							min="-84 db" max="24 db" log="true"
-							type="peak" release="1"
-							activity=":e_out_l" value.color="right" />
-						<ledchannel id="g_out_s"
-							min="-84 db" max="24 db" log="true"
-							type="peak" release="1"
-							activity=":e_out_s" value.color="right" />
-					</ledmeter>
-				</cell>
+				<!-- Output level meter -->
+				<ledmeter vexpand="true" height.min="256" angle="1">
+					<ledchannel id="g_out_l"
+						min="-84 db" max="24 db" log="true"
+						type="peak" release="1"
+						activity=":e_out_l" value.color="right" />
+					<ledchannel id="g_out_s"
+						min="-84 db" max="24 db" log="true"
+						type="peak" release="1"
+						activity=":e_out_s" value.color="right" />
+				</ledmeter>
 			</grid>
 		</cell>
 		
 		<!-- Row 2 -->
 		<hbox spacing="4" vexpand="false" bg.color="bg_schema" pad.h="6">
-			<label text="labels.weighting" pad.h="6" width.min="38"/>
+			<label text="labels.weighting" pad.r="6" />
 			<combo id="weight" pad.v="4"/>
+			
+			<ui:if test="ex :scmode">
+				<label text="labels.sc.sc_mode" pad.h="6" />
+				<combo id="scmode" />
+			</ui:if>
 			
 			<void hexpand="true" />
 		</hbox>
@@ -124,14 +155,7 @@
 		<cell cols="2">
 			<hbox spacing="4">
 				<group text="labels.sidechain" ipadding="0">
-					<grid rows="3" cols="3" transpose="true">
-						<!-- c1 -->
-						<ui:if test="ex :scmode">
-							<label text="labels.mode" />
-							<combo id="scmode" />
-							<void />
-						</ui:if>
-						
+					<grid rows="3" cols="2" transpose="true">
 						<!-- c2 -->
 						<label text="labels.preamp" />
 						<knob id="preamp" />
@@ -143,63 +167,53 @@
 						<value id="lkahead" />
 					</grid>
 				</group>
-				<group text="labels.plug.autogain" ipadding="0">
-					<grid rows="6" cols="11">
-						<!-- r1 -->
-						<cell cols="3"><label text="labels.loudness" /></cell>
-						<cell rows="6"><vsep pad.h="2" bg.color="bg" hreduce="true"/></cell>
-						<cell cols="3"><label text="labels.autogain.long_time_processing" /></cell>
-						<cell rows="6"><vsep pad.h="2" bg.color="bg" hreduce="true"/></cell>
-						<cell cols="3"><label text="labels.autogain.short_time_processing" /></cell>
-					
-						<!-- r2 -->
-						<cell cols="3"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
-						<cell cols="3"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
-						<cell cols="3"><hsep pad.v="2" bg.color="bg" vreduce="true"/></cell>
+				<group text="labels.loudness" ipadding="0">
+					<grid rows="3" cols="3">
+						<label text="labels.metering.level" pad.h="6" width.min="38"/>
+						<label text="labels.metering.drift" pad.h="6" width.min="38"/>
+						<label text="labels.silence" pad.h="6" width.min="38"/>
 						
-						<!-- r3 -->
-						<cell rows="2"><label text="labels.metering.level" pad.h="6" width.min="38"/></cell>
-						<cell rows="2"><label text="labels.metering.drift" pad.h="6" width.min="38"/></cell>
-						<cell rows="2"><label text="labels.silence" pad.h="6" width.min="38"/></cell>
-						
-						<label text="labels.period" pad.h="6" width.min="38"/>
-						<label text="labels.metering.fall" pad.h="6" width.min="38"/>
-						<label text="labels.metering.grow" pad.h="6" width.min="38"/>
-						
-						<label text="labels.period" pad.h="6" width.min="38"/>
-						<label text="labels.metering.fall" pad.h="6" width.min="38"/>
-						<label text="labels.metering.grow" pad.h="6" width.min="38"/>
-						
-						<!-- r4 -->
-						<void />
-						<combo id="vfall_l" />
-						<combo id="vgrow_l" />
-						
-						<void />
-						<combo id="vfall_s" />
-						<combo id="vgrow_s" />
-						
-						<!-- r5 -->
 						<knob id="level" pad.t="4"/>
 						<knob id="drift" pad.t="4"/>
 						<knob id="silence" pad.t="4"/>
+						
+						<value id="level" width.min="32" />
+						<value id="drift" width.min="32" />
+						<value id="silence" width.min="32" />
+					</grid>
+				</group>
+				<group text="labels.autogain.long_time_processing" ipadding="0">
+					<grid rows="4" cols="3">
+						<label text="labels.period" pad.h="6" width.min="38"/>
+						<label text="labels.metering.fall" pad.h="6" width.min="38"/>
+						<label text="labels.metering.grow" pad.h="6" width.min="38"/>
+						
+						<void />
+						<combo id="vfall_l" />
+						<combo id="vgrow_l" />
 						
 						<knob id="lperiod" pad.t="4"/>
 						<knob id="tfall_l" pad.t="4"/>
 						<knob id="tgrow_l" pad.t="4"/>
 						
-						<knob id="speriod" pad.t="4"/>
-						<knob id="tfall_s" pad.t="4"/>
-						<knob id="tgrow_s" pad.t="4"/>
-						
-						<!-- r6 -->
-						<value id="level" width.min="32" sline="true" />
-						<value id="drift" width.min="32" sline="true" />
-						<value id="silence" width.min="32" sline="true" />
-						
 						<value id="lperiod" width.min="32" sline="true" />
 						<value id="tfall_l" width.min="32" sline="true" />
 						<value id="tgrow_l" width.min="32" sline="true" />
+					</grid>
+				</group>
+				<group text="labels.autogain.short_time_processing" ipadding="0">
+					<grid rows="4" cols="3">
+						<label text="labels.period" pad.h="6" width.min="38"/>
+						<label text="labels.metering.fall" pad.h="6" width.min="38"/>
+						<label text="labels.metering.grow" pad.h="6" width.min="38"/>
+						
+						<void />
+						<combo id="vfall_s" />
+						<combo id="vgrow_s" />
+						
+						<knob id="speriod" pad.t="4"/>
+						<knob id="tfall_s" pad.t="4"/>
+						<knob id="tgrow_s" pad.t="4"/>
 						
 						<value id="speriod" width.min="32" sline="true" />
 						<value id="tfall_s" width.min="32" sline="true" />

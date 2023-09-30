@@ -85,11 +85,15 @@ namespace lsp
                 dspu::MeterGraph        sSInGraph;          // Loudness metering graph for short input gain
                 dspu::MeterGraph        sLOutGraph;         // Loudness metering graph for long output gain
                 dspu::MeterGraph        sSOutGraph;         // Loudness metering graph for short output gain
+                dspu::MeterGraph        sLScGraph;          // Sideghain metering graph for long output gain
+                dspu::MeterGraph        sSScGraph;          // Sidechain metering graph for short output gain
                 dspu::MeterGraph        sGainGraph;         // Gain correction graph
                 dspu::LoudnessMeter     sLInMeter;          // Input loudness metering tool for long period
                 dspu::LoudnessMeter     sSInMeter;          // Input loudness metering tool for short period
                 dspu::LoudnessMeter     sLOutMeter;         // Output loudness metering tool for long period
                 dspu::LoudnessMeter     sSOutMeter;         // Output loudness metering tool for short period
+                dspu::LoudnessMeter     sLScMeter;          // Sidechain loudness metering for the long period
+                dspu::LoudnessMeter     sSScMeter;          // Sidechain loudness metering for the short period
                 dspu::AutoGain          sAutoGain;          // Auto-gain
 
                 size_t                  nChannels;          // Number of channels
@@ -101,6 +105,8 @@ namespace lsp
                 float                   fSInGain;           // Input gain meter for short period
                 float                   fLOutGain;          // Output gain meter for long period
                 float                   fSOutGain;          // Output gain meter for short period
+                float                   fLScGain;           // Output gain meter for long sidechain
+                float                   fSScGain;           // Output gain meter for short sidechain
                 float                   fGain;              // Gain correction meter
                 float                   fOldLevel;          // Old level value
                 float                   fLevel;             // Current level value
@@ -125,14 +131,18 @@ namespace lsp
                 plug::IPort            *pQAmp;              // Quick amplifier option
                 gcontrol_t              vGainCtl[GCT_TOTAL];// Gain controls
                 plug::IPort            *pLInGain;           // Input loudness meter for long period
-                plug::IPort            *pLOutGain;          // Output loudness meter for long period
                 plug::IPort            *pSInGain;           // Input loudness meter for long period
+                plug::IPort            *pLOutGain;          // Output loudness meter for long period
                 plug::IPort            *pSOutGain;          // Output loudness meter for long period
+                plug::IPort            *pLScGain;           // Sidechain loudness meter for long period
+                plug::IPort            *pSScGain;           // Sidechain loudness meter for long period
                 plug::IPort            *pGain;              // Gain correction level
                 plug::IPort            *pLInGraph;          // Input loudness graph for long period
-                plug::IPort            *pLOutGraph;         // Output loudness graph for long period
                 plug::IPort            *pSInGraph;          // Input loudness graph for short period
+                plug::IPort            *pLOutGraph;         // Output loudness graph for long period
                 plug::IPort            *pSOutGraph;         // Output loudness graph for short period
+                plug::IPort            *pLScGraph;          // Sidechain loudness graph for long period
+                plug::IPort            *pSScGraph;          // Sidechain loudness graph for short period
                 plug::IPort            *pGainGraph;         // Gain correction graph
 
                 uint8_t                *pData;              // Allocated data
