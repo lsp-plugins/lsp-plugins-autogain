@@ -35,7 +35,7 @@ namespace lsp
         {
             static constexpr float  SC_PREAMP_MIN       = -60.0f;
             static constexpr float  SC_PREAMP_MAX       = 40.0f;
-            static constexpr float  SC_PREAMP_STEP      = 0.05f;
+            static constexpr float  SC_PREAMP_STEP      = 0.04f;
             static constexpr float  SC_PREAMP_DFL       = 0.0f;
 
             static constexpr float  SC_LOOKAHEAD_MIN    = 0.0f;
@@ -45,12 +45,12 @@ namespace lsp
 
             static constexpr float  LONG_PERIOD_MIN     = 100.0f;
             static constexpr float  LONG_PERIOD_MAX     = 2000.0f;
-            static constexpr float  LONG_PERIOD_STEP    = 0.005f;
+            static constexpr float  LONG_PERIOD_STEP    = 0.0005f;
             static constexpr float  LONG_PERIOD_DFL     = 400.0f;
 
             static constexpr float  SHORT_PERIOD_MIN    = 5.0f;
             static constexpr float  SHORT_PERIOD_MAX    = 100.0f;
-            static constexpr float  SHORT_PERIOD_STEP   = 0.0025f;
+            static constexpr float  SHORT_PERIOD_STEP   = 0.0004f;
             static constexpr float  SHORT_PERIOD_DFL    = 20.0f;
 
             static constexpr float  LONG_GROW_MIN       = 10.0f;
@@ -85,14 +85,14 @@ namespace lsp
 
             static constexpr float  MAX_GAIN_MIN        = 0.0f;
             static constexpr float  MAX_GAIN_MAX        = 108.0f;
-            static constexpr float  MAX_GAIN_STEP       = 0.01f;
+            static constexpr float  MAX_GAIN_STEP       = 0.02f;
             static constexpr float  MAX_GAIN_DFL        = 36.0f;
 
             static constexpr float  LEVEL_MIN           = -60.0f;
             static constexpr float  LEVEL_MAX           = 0.0f;
             static constexpr float  LEVEL_GAIN_MIN      = GAIN_AMP_M_60_DB;
             static constexpr float  LEVEL_GAIN_MAX      = GAIN_AMP_0_DB;
-            static constexpr float  LEVEL_STEP          = 0.05f;
+            static constexpr float  LEVEL_STEP          = 0.015f;
             static constexpr float  LEVEL_DFL           = -23.0f;
 
             static constexpr float  MESH_TIME           = 4.0f;
