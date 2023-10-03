@@ -95,7 +95,7 @@ namespace lsp
             static constexpr float  LEVEL_STEP          = 0.05f;
             static constexpr float  LEVEL_DFL           = -23.0f;
 
-            static constexpr float  MESH_TIME           = 2.0f;
+            static constexpr float  MESH_TIME           = 4.0f;
             static constexpr size_t MESH_POINTS         = 640.0f;
 
             static constexpr float  DELAY_OUT_MAX_TIME  = 10000.0f;
