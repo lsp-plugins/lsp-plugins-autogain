@@ -13,7 +13,7 @@
 	weighting filters provided by the the <a href="https://webstore.iec.ch/publication/5708">IEC 61672:2003</a>
 	standard: A, B, C and D weighting filters.
 </p>
-<? if($sc) { ?>
+<?php if($sc) { ?>
 <p>
 	Additional sidechain input allows to gain the control over the loudness of the output in two different modes:
 </p>
@@ -25,7 +25,7 @@
 	as a desired loudness level. After that, the loudness of the input signal is measured, then the corresponding gain
 	correction is computed to match the loudness level of the input signal to the loudness level of the sidechain signal.
 </ul>
-<? } ?>
+<?php } ?>
 <p>
 	If the level of the signal rapidly changes, the plugin can also rapidly reduce the gain to minimize the effect of
 	sudden loud clicks/pops and (if enabled) rapidly raise the gain, too. Additional control over the zero level also
@@ -45,7 +45,7 @@
 		<li>IEC 61672:2003 D filter</li> - D filter defined by IEC 61672:2003 standard.
 		<li>ITU-R BS.1770-4 K filter</li> - K filter defined by ITU-R BS.1770-4 standard.
 	</ul>
-	<? if($sc) { ?>
+	<?php if($sc) { ?>
 	<li><b>SC Mode</b> - sidechain mode:</li>
 	<ul>
 		<li>Internal</li> - the input signal is also fed to the sidechain.
@@ -58,7 +58,7 @@
 <p><b>Meters</b>:</p>
 <ul>
 	<b>In</b> - the loudness (measured for short and long periods) of the input signal in LUFS/LKFS units.
-	<? if($sc) { ?>
+	<?php if($sc) { ?>
 	<b>Sc</b> - the loudness (measured for short and long periods) of the sidechain signal in LUFS/LKFS units.
 	<?php } ?>
 	<b>Gan</b> - the level of the gain correction signal.
