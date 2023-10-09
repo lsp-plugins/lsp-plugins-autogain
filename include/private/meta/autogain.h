@@ -112,21 +112,23 @@ namespace lsp
                 WEIGHT_DFL = WEIGHT_K
             };
 
-            enum nominator_t
+            enum numerator_t
             {
-                NOM_1DB,
-                NOM_3DB,
-                NOM_6DB,
-                NOM_9DB,
-                NOM_10DB,
-                NOM_12DB,
-                NOM_15DB,
-                NOM_18DB,
-                NOM_20DB,
-                NOM_21DB,
-                NOM_24DB,
+                NUM_0_1DB,
+                NUM_0_5DB,
+                NUM_1DB,
+                NUM_3DB,
+                NUM_6DB,
+                NUM_9DB,
+                NUM_10DB,
+                NUM_12DB,
+                NUM_15DB,
+                NUM_18DB,
+                NUM_20DB,
+                NUM_21DB,
+                NUM_24DB,
 
-                NOM_DFL = NOM_12DB
+                NUM_DFL = NUM_12DB
             };
 
             enum scmode_t

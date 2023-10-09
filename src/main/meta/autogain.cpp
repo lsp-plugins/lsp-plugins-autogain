@@ -48,6 +48,8 @@ namespace lsp
 
         static const port_item_t speed_numerators[] =
         {
+            { "0.1 dB",         "autogain.numerator.0_1db"  },
+            { "0.5 dB",         "autogain.numerator.0_5db"  },
             { "1 dB",           "autogain.numerator.1db"    },
             { "3 dB",           "autogain.numerator.3db"    },
             { "6 dB",           "autogain.numerator.6db"    },
@@ -98,13 +100,13 @@ namespace lsp
             CONTROL("max_amp", "The maximum amplification gain", U_DB, meta::autogain::MAX_GAIN), \
             \
             SWITCH("qamp", "Enable quick amplifier", 0.0f), \
-            COMBO("vgrow_l", "Long gain grow amount", meta::autogain::NOM_DFL, speed_numerators), \
+            COMBO("vgrow_l", "Long gain grow amount", meta::autogain::NUM_DFL, speed_numerators), \
             LOG_CONTROL("tgrow_l", "Long gain grow time", U_MSEC, meta::autogain::LONG_GROW), \
-            COMBO("vfall_l", "Long gain fall amount", meta::autogain::NOM_DFL, speed_numerators), \
+            COMBO("vfall_l", "Long gain fall amount", meta::autogain::NUM_DFL, speed_numerators), \
             LOG_CONTROL("tfall_l", "Long gain fall time", U_MSEC, meta::autogain::LONG_FALL), \
-            COMBO("vgrow_s", "Short gain grow amount", meta::autogain::NOM_DFL, speed_numerators), \
+            COMBO("vgrow_s", "Short gain grow amount", meta::autogain::NUM_DFL, speed_numerators), \
             LOG_CONTROL("tgrow_s", "Short gain grow time", U_MSEC, meta::autogain::SHORT_GROW), \
-            COMBO("vfall_s", "Short gain fall amount", meta::autogain::NOM_DFL, speed_numerators), \
+            COMBO("vfall_s", "Short gain fall amount", meta::autogain::NUM_DFL, speed_numerators), \
             LOG_CONTROL("tfall_s", "Short gain fall time", U_MSEC, meta::autogain::SHORT_FALL), \
             \
             SWITCH("e_in_l", "Input metering enable for long period", 1.0f), \

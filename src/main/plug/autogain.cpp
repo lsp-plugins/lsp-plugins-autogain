@@ -40,7 +40,8 @@ namespace lsp
 
     namespace plugins
     {
-        static const uint8_t gain_numerators[] = { 1, 3, 6, 9, 10, 12, 15, 18, 20, 21, 24 };
+        /* Gain numberators multiplied by 10 */
+        static const uint8_t gain_numerators[] = { 1, 5, 10, 30, 60, 90, 100, 120, 150, 180, 200, 210, 240 };
 
         //---------------------------------------------------------------------
         // Plugin factory
@@ -391,7 +392,7 @@ namespace lsp
 
             size_t numerator= size_t(gc->pValue->value());
             size_t idx      = lsp_limit(numerator, 0U, (sizeof(gain_numerators)/sizeof(gain_numerators[0])) - 1);
-            float fnum      = gain_numerators[idx];
+            float fnum      = gain_numerators[idx] * 0.1f;
             float time      = gc->pPeroid->value() * 0.001f;
 
             return fnum / time ; // Return value in dB/s
@@ -553,25 +554,20 @@ namespace lsp
             {
                 channel_t *c    = &vChannels[i];
 
+                sLInMeter.bind(i, NULL, c->vIn, 0);
+                sSInMeter.bind(i, NULL, c->vIn, 0);
+
                 // Process sidechain signal
                 switch (enScMode)
                 {
                     case meta::autogain::SCMODE_CONTROL:
                     case meta::autogain::SCMODE_MATCH:
                         dsp::lramp2(c->vBuffer, c->vScIn, fOldPreamp, fPreamp, samples);
-
-                        // In 'Control' and 'Match' modes we measure the original input signal
-                        sLInMeter.bind(i, NULL, c->vIn, 0);
-                        sSInMeter.bind(i, NULL, c->vIn, 0);
                         break;
 
                     case meta::autogain::SCMODE_INTERNAL:
                     default:
                         dsp::lramp2(c->vBuffer, c->vIn, fOldPreamp, fPreamp, samples);
-
-                        // In 'Internal' and 'Match' modes we measure the processed sidechain signal
-                        sLInMeter.bind(i, NULL, c->vBuffer, 0);
-                        sSInMeter.bind(i, NULL, c->vBuffer, 0);
                         break;
                 }
 
@@ -580,6 +576,11 @@ namespace lsp
                 {
                     sLScMeter.bind(i, NULL, c->vBuffer, 0);
                     sSScMeter.bind(i, NULL, c->vBuffer, 0);
+                }
+                else
+                {
+                    sLInMeter.bind(i, NULL, c->vBuffer, 0);
+                    sSInMeter.bind(i, NULL, c->vBuffer, 0);
                 }
             }
             fOldPreamp  = fPreamp;
