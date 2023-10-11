@@ -800,7 +800,109 @@ namespace lsp
         {
             plug::Module::dump(v);
 
-            // TODO
+            v->write_object("sLInGraph", &sLInGraph);
+            v->write_object("sSInGraph", &sSInGraph);
+            v->write_object("sLOutGraph", &sLOutGraph);
+            v->write_object("sSOutGraph", &sSOutGraph);
+            v->write_object("sLScGraph", &sLScGraph);
+            v->write_object("sSScGraph", &sSScGraph);
+            v->write_object("sGainGraph", &sGainGraph);
+            v->write_object("sLInMeter", &sLInMeter);
+            v->write_object("sSInMeter", &sSInMeter);
+            v->write_object("sLOutMeter", &sLOutMeter);
+            v->write_object("sSOutMeter", &sSOutMeter);
+            v->write_object("sLScMeter", &sLScMeter);
+            v->write_object("sSScMeter", &sSScMeter);
+            v->write_object("sAutoGain", &sAutoGain);
+
+            v->write("nChannels", nChannels);
+            v->write("enScMode", enScMode);
+            v->write("bSidechain", bSidechain);
+
+            v->begin_array("vChannels", vChannels, nChannels);
+            {
+                for (size_t i=0; i<nChannels; ++i)
+                {
+                    const channel_t *c  = &vChannels[i];
+                    v->begin_object(c, sizeof(channel_t));
+                    {
+                        v->write_object("sBypass", &c->sBypass);
+                        v->write_object("sDelay", &c->sDelay);
+
+                        v->write("vIn", c->vIn);
+                        v->write("vScIn", c->vScIn);
+                        v->write("vOut", c->vOut);
+                        v->write("vBuffer", c->vBuffer);
+
+                        v->write("pIn", c->pIn);
+                        v->write("pScIn", c->pScIn);
+                        v->write("pOut", c->pOut);
+                    }
+                    v->end_object();
+                }
+            }
+            v->end_array();
+
+            v->write("fLInGain", fLInGain);
+            v->write("fSInGain", fSInGain);
+            v->write("fLOutGain", fLOutGain);
+            v->write("fSOutGain", fSOutGain);
+            v->write("fLScGain", fLScGain);
+            v->write("fSScGain", fSScGain);
+            v->write("fGain", fGain);
+            v->write("fOldLevel", fOldLevel);
+            v->write("fLevel", fLevel);
+            v->write("fOldPreamp", fOldPreamp);
+            v->write("fPreamp", fPreamp);
+
+            v->write("vLBuffer", vLBuffer);
+            v->write("vSBuffer", vSBuffer);
+            v->write("vGainBuffer", vGainBuffer);
+            v->write("vTimePoints", vTimePoints);
+
+            v->write("pBypass", pBypass);
+            v->write("pScMode", pScMode);
+            v->write("pScPreamp", pScPreamp);
+            v->write("pLookahead", pLookahead);
+            v->write("pLPeriod", pLPeriod);
+            v->write("pSPeriod", pSPeriod);
+            v->write("pWeighting", pWeighting);
+            v->write("pLevel", pLevel);
+            v->write("pDeviation", pDeviation);
+            v->write("pSilence", pSilence);
+            v->write("pAmpOn", pAmpOn);
+            v->write("pAmpGain", pAmpGain);
+            v->write("pQAmp",pQAmp );
+
+            v->begin_array("vGainCtl", vGainCtl, GCT_TOTAL);
+            for (size_t i=0; i< GCT_TOTAL; ++i)
+            {
+                const gcontrol_t *gc = &vGainCtl[i];
+                v->begin_object(gc, sizeof(gcontrol_t));
+                {
+                    v->write("pPeroid", gc->pPeroid);
+                    v->write("pValue", gc->pValue);
+                }
+                v->end_object();
+            }
+            v->end_array();
+
+            v->write("pLInGain", pLInGain);
+            v->write("pSInGain", pSInGain);
+            v->write("pLOutGain", pLOutGain);
+            v->write("pSOutGain", pSOutGain);
+            v->write("pLScGain", pLScGain);
+            v->write("pSScGain", pSScGain);
+            v->write("pGain", pGain);
+            v->write("pLInGraph", pLInGraph);
+            v->write("pSInGraph", pSInGraph);
+            v->write("pLOutGraph", pLOutGraph);
+            v->write("pSOutGraph", pSOutGraph);
+            v->write("pLScGraph", pLScGraph);
+            v->write("pSScGraph", pSScGraph);
+            v->write("pGainGraph", pGainGraph);
+
+            v->write("pData", pData);
         }
 
     } /* namespace plugins */
