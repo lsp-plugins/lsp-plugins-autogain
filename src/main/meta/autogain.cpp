@@ -179,7 +179,7 @@ namespace lsp
             "autogain",
             "Automatic Gain Control",
             B_UTILITIES,
-            "", // TODO: provide ID of the video on YouTube
+            "i_10kAtZmJU",
             "This plugin allows to stick the loudness of the audio to the desired level"
         };
 
