@@ -27,8 +27,9 @@
 </ul>
 <?php } ?>
 <p>
-	If the level of the signal rapidly changes, the plugin can also rapidly reduce the gain to minimize the effect of
-	sudden loud clicks/pops and (if enabled) rapidly raise the gain, too. Additional control over the zero level also
+	If the level of the signal rapidly changes, the plugin can also rapidly reduce the shocking effect of the loud sound
+	and (if enabled) rapidly raise the gain, too. Despite, because it uses RMS measurements, it does not fully protect from
+	sudden loud clicks/pops, and aditional surge protection should be applied. Additional control over the zero level also
 	makes the plugin act as a trigger: if the signal is below the mimum level, then the gain value does not change.
 	This prevents from significant amplification of a background noise in the case of long silence at the input. 
 </p>
@@ -68,7 +69,7 @@
 <p><b>Sidechain</b> Section:</p>
 <ul>
 	<b>Preamp</b> - additional gain applied to the sidechain signal.
-	<b>Lookahead</b> - sidechain lookahead time.
+	<b>Lookahead</b> - sidechain lookahead time, allows to delay the original signal to make work more smooth.
 </ul>
 <p><b>Loudness</b> Section:</p>
 <ul>
