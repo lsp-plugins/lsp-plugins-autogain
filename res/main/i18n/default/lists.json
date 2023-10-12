@@ -1,0 +1,33 @@
+{
+	"autogain": {
+		"numerator": {
+			"0_1db": "0.1 dB",
+			"0_5db": "0.5 dB",
+			"1db": "1 dB",
+			"10db": "10 dB",
+			"12db": "12 dB",
+			"15db": "15 dB",
+			"18db": "18 dB",
+			"20db": "20 dB",
+			"21db": "21 dB",
+			"24db": "24 dB",
+			"3db": "3 dB",
+			"6db": "6 dB",
+			"9db": "9 dB"
+		},
+		"sc": {
+			"control": "Control",
+			"internal": "Internal",
+			"match": "Match"
+		},
+		"weighting": {
+			"none": "None",
+			"a": "IEC 61672:2003 A filter",
+			"b": "IEC 61672:2003 B filter",
+			"c": "IEC 61672:2003 C filter",
+			"d": "IEC 61672:2003 D filter",
+			"k": "ITU-R BS.1770-4 K filter"
+		}
+	}
+}
+
