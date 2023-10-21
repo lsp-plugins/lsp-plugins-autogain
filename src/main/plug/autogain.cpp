@@ -150,12 +150,13 @@ namespace lsp
             // Estimate the number of bytes to allocate
             size_t szof_channels    = align_size(sizeof(channel_t) * nChannels, OPTIMAL_ALIGN);
             size_t szof_buffer      = BUFFER_SIZE * sizeof(float);
+            size_t szof_graph       = meta::autogain::MESH_POINTS * sizeof(float);
             size_t alloc            =
                 szof_channels +     // vChannels
                 szof_buffer +       // vLBuffer
                 szof_buffer +       // vSBuffer
                 szof_buffer +       // vGainBuffer
-                szof_buffer +       // vTimePoints
+                szof_graph +        // vTimePoints
                 nChannels * (
                     szof_buffer     // vBuffer
                 );
@@ -190,7 +191,7 @@ namespace lsp
             vGainBuffer             = reinterpret_cast<float *>(ptr);
             ptr                    += szof_buffer;
             vTimePoints             = reinterpret_cast<float *>(ptr);
-            ptr                    += szof_buffer;
+            ptr                    += szof_graph;
 
             for (size_t i=0; i < nChannels; ++i)
             {
@@ -508,7 +509,7 @@ namespace lsp
             bind_audio_ports();
             clean_meters();
 
-            for (size_t offset=0; offset < samples; ++offset)
+            for (size_t offset=0; offset < samples; )
             {
                 size_t to_do    = lsp_min(samples - offset, BUFFER_SIZE);
 
