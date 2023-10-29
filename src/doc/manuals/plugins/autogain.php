@@ -39,12 +39,12 @@
 	<li><b>Bypass</b> - bypass switch, when turned on the plugin bypasses signal without any change.</li>
 	<li><b>Weighting</b> - weighting function for the signal:</li>
 	<ul>
-		<li>None</li> - no weighting applied.
-		<li>IEC 61672:2003 A filter</li> - A filter defined by IEC 61672:2003 standard.
-		<li>IEC 61672:2003 B filter</li> - B filter defined by IEC 61672:2003 standard.
-		<li>IEC 61672:2003 C filter</li> - C filter defined by IEC 61672:2003 standard.
-		<li>IEC 61672:2003 D filter</li> - D filter defined by IEC 61672:2003 standard.
-		<li>ITU-R BS.1770-4 K filter</li> - K filter defined by ITU-R BS.1770-4 standard.
+		<li>None - no weighting applied.</li>
+		<li>IEC 61672:2003 A filter - A filter defined by IEC 61672:2003 standard.</li>
+		<li>IEC 61672:2003 B filter - B filter defined by IEC 61672:2003 standard.</li>
+		<li>IEC 61672:2003 C filter - C filter defined by IEC 61672:2003 standard.</li>
+		<li>IEC 61672:2003 D filter - D filter defined by IEC 61672:2003 standard.</li>
+		<li>ITU-R BS.1770-4 K filter - K filter defined by ITU-R BS.1770-4 standard.</li>
 	</ul>
 	<?php if($sc) { ?>
 	<li><b>SC Mode</b> - sidechain mode:</li>
@@ -58,41 +58,41 @@
 
 <p><b>Meters</b>:</p>
 <ul>
-	<b>In</b> - the loudness (measured for short and long periods) of the input signal in LUFS/LKFS units.
+	<li><b>In</b> - the loudness (measured for short and long periods) of the input signal in LUFS/LKFS units.</li>
 	<?php if($sc) { ?>
-	<b>Sc</b> - the loudness (measured for short and long periods) of the sidechain signal in LUFS/LKFS units.
+	<li><b>Sc</b> - the loudness (measured for short and long periods) of the sidechain signal in LUFS/LKFS units.</li>
 	<?php } ?>
-	<b>Gan</b> - the level of the gain correction signal.
-	<b>Out</b> - the loudness (measured for short and long periods) of the output signal in LUFS/LKFS units.
+	<li><b>Gan</b> - the level of the gain correction signal.</li>
+	<li><b>Out</b> - the loudness (measured for short and long periods) of the output signal in LUFS/LKFS units.</li>
 </ul>
 
 <p><b>Sidechain</b> Section:</p>
 <ul>
-	<b>Preamp</b> - additional gain applied to the sidechain signal.
-	<b>Lookahead</b> - sidechain lookahead time, allows to delay the original signal to make work more smooth.
+	<li><b>Preamp</b> - additional gain applied to the sidechain signal.</li>
+	<li><b>Lookahead</b> - sidechain lookahead time, allows to delay the original signal to make work more smooth.</li>
 </ul>
 <p><b>Loudness</b> Section:</p>
 <ul>
-	<li><b>Level</b></li> - the desired loudness level of the signal.
-	<li><b>Drift</b></li> - the maximum difference between the long-time and short-time loudness levels before the automatic gain
-	control starts reacting rapidly.
-	<li><b>Silence</b></li> - the threshold of the silence level. All sounds with loudness below this threshold are considered to be silence.
-	<li><b>Max gain</b></li> - allows to limit the maximum possible gain amplificaiton applied to the signal.
+	<li><b>Level</b> - the desired loudness level of the signal.</li>
+	<li><b>Drift</b> - the maximum difference between the long-time and short-time loudness levels before the automatic gain
+	control starts reacting rapidly.</li>
+	<li><b>Silence</b> - the threshold of the silence level. All sounds with loudness below this threshold are considered to be silence.</li>
+	<li><b>Max gain</b> - allows to limit the maximum possible gain amplificaiton applied to the signal.</li>
 </ul>
 <p><b>Long-time processing</b> Section:</p>
 <ul>
-	<b>Period</b> - the measurement period of time for long-time loudness measurements.
-	<b>Fall</b> - controls that allow to configure speed of the gain fall when the gain correction
-	needs to be lowered according to the changes of the long-time loudness measurements.
-	<b>Grow</b> - controls that allow to configure speed of the gain grow when the gain correction
-	needs to be raised according to the changes of the long-time loudness measurements.
+	<li><b>Period</b> - the measurement period of time for long-time loudness measurements.</li>
+	<li><b>Fall</b> - controls that allow to configure speed of the gain fall when the gain correction
+	needs to be lowered according to the changes of the long-time loudness measurements.</li>
+	<li><b>Grow</b> - controls that allow to configure speed of the gain grow when the gain correction
+	needs to be raised according to the changes of the long-time loudness measurements.</li>
 </ul>
 <p><b>Short-time processing</b> Section:</p>
 <ul>
-	<b>Period</b> - the measurement period of time for short-time loudness measurements.
-	<b>Fall</b> - controls that allow to configure speed of the gain fall when the gain correction
-	needs to be rapidly lowered according to the changes of the short-time loudness measurements.
-	<b>Grow</b> - controls that allow to enable and configure speed of the gain grow when the gain correction
-	needs to be rapidly raised according to the changes of the short-time loudness measurements.
+	<li><b>Period</b> - the measurement period of time for short-time loudness measurements.</li>
+	<li><b>Fall</b> - controls that allow to configure speed of the gain fall when the gain correction
+	needs to be rapidly lowered according to the changes of the short-time loudness measurements.</li>
+	<li><b>Grow</b> - controls that allow to enable and configure speed of the gain grow when the gain correction
+	needs to be rapidly raised according to the changes of the short-time loudness measurements.</li>
 </ul>
 
