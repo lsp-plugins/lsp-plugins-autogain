@@ -187,6 +187,7 @@ namespace lsp
         {
             "Autogain Mono",
             "Autogain Mono",
+            "Autogain Mono",
             "AG1M",
             &developers::v_sadovnikov,
             "autogain_mono",
@@ -209,6 +210,7 @@ namespace lsp
 
         const plugin_t autogain_stereo =
         {
+            "Autogain Stereo",
             "Autogain Stereo",
             "Autogain Stereo",
             "AG1S",
@@ -235,6 +237,7 @@ namespace lsp
         {
             "Sidechain Autogain Mono",
             "Sidechain Autogain Mono",
+            "Sidechain Autogain Mono",
             "SCAG1M",
             &developers::v_sadovnikov,
             "sc_autogain_mono",
@@ -257,6 +260,7 @@ namespace lsp
 
         const plugin_t sc_autogain_stereo =
         {
+            "Sidechain Autogain Stereo",
             "Sidechain Autogain Stereo",
             "Sidechain Autogain Stereo",
             "SCAG1S",
