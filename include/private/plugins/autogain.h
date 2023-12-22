@@ -28,6 +28,7 @@
 #include <lsp-plug.in/dsp-units/misc/broadcast.h>
 #include <lsp-plug.in/dsp-units/util/Delay.h>
 #include <lsp-plug.in/dsp-units/util/MeterGraph.h>
+#include <lsp-plug.in/plug-fw/core/IDBuffer.h>
 #include <lsp-plug.in/plug-fw/plug.h>
 #include <private/meta/autogain.h>
 
@@ -85,7 +86,7 @@ namespace lsp
                 dspu::MeterGraph        sSInGraph;          // Loudness metering graph for short input gain
                 dspu::MeterGraph        sLOutGraph;         // Loudness metering graph for long output gain
                 dspu::MeterGraph        sSOutGraph;         // Loudness metering graph for short output gain
-                dspu::MeterGraph        sLScGraph;          // Sideghain metering graph for long output gain
+                dspu::MeterGraph        sLScGraph;          // Sidechain metering graph for long output gain
                 dspu::MeterGraph        sSScGraph;          // Sidechain metering graph for short output gain
                 dspu::MeterGraph        sGainGraph;         // Gain correction graph
                 dspu::LoudnessMeter     sLInMeter;          // Input loudness metering tool for long period
@@ -147,6 +148,8 @@ namespace lsp
                 plug::IPort            *pSScGraph;          // Sidechain loudness graph for short period
                 plug::IPort            *pGainGraph;         // Gain correction graph
 
+                core::IDBuffer         *pIDisplay;          // Inline display buffer
+
                 uint8_t                *pData;              // Allocated data
 
             protected:
@@ -180,6 +183,7 @@ namespace lsp
                 virtual void            update_sample_rate(long sr) override;
                 virtual void            update_settings() override;
                 virtual void            process(size_t samples) override;
+                virtual bool            inline_display(plug::ICanvas *cv, size_t width, size_t height) override;
                 virtual void            dump(dspu::IStateDumper *v) const override;
         };
 

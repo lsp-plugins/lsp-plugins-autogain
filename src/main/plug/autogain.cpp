@@ -24,6 +24,7 @@
 #include <lsp-plug.in/dsp/dsp.h>
 #include <lsp-plug.in/dsp-units/units.h>
 #include <lsp-plug.in/plug-fw/meta/func.h>
+#include <lsp-plug.in/shared/id_colors.h>
 
 #include <private/plugins/autogain.h>
 
@@ -132,6 +133,8 @@ namespace lsp
             pLScGraph       = NULL;
             pSScGraph       = NULL;
             pGainGraph      = NULL;
+
+            pIDisplay       = NULL;
 
             pData           = NULL;
         }
@@ -329,6 +332,13 @@ namespace lsp
                 vChannels   = NULL;
             }
 
+            // Destroy inline display
+            if (pIDisplay != NULL)
+            {
+                pIDisplay->destroy();
+                pIDisplay   = NULL;
+            }
+
             // Free previously allocated data chunk
             if (pData != NULL)
             {
@@ -523,6 +533,10 @@ namespace lsp
 
             output_meters();
             output_mesh_data();
+
+            // Request for redraw
+            if (pWrapper != NULL)
+                pWrapper->query_display_draw();
         }
 
         void autogain::bind_audio_ports()
@@ -795,6 +809,92 @@ namespace lsp
                 dsp::copy(mesh->pvData[1], sGainGraph.data(), meta::autogain::MESH_POINTS);
                 mesh->data(2, meta::autogain::MESH_POINTS);
             }
+        }
+
+        bool autogain::inline_display(plug::ICanvas *cv, size_t width, size_t height)
+        {
+            // Check proportions
+            if (height > (M_RGOLD_RATIO * width))
+                height  = M_RGOLD_RATIO * width;
+
+            // Init canvas
+            if (!cv->init(width, height))
+                return false;
+            width   = cv->width();
+            height  = cv->height();
+
+            // Clear background
+            bool bypassing = vChannels[0].sBypass.bypassing();
+            cv->set_color_rgb((bypassing) ? CV_DISABLED : CV_BACKGROUND);
+            cv->paint();
+
+            // Calc axis params
+            float zy    = 1.0f/GAIN_AMP_M_84_DB;
+            float dx    = -float(width/meta::autogain::MESH_TIME);
+            float dy    = height/(logf(GAIN_AMP_M_84_DB)-logf(GAIN_AMP_P_24_DB));
+
+            // Draw axis
+            cv->set_line_width(1.0);
+
+            // Draw vertical lines
+            cv->set_color_rgb(CV_YELLOW, 0.5f);
+            for (float i=1.0; i < (meta::autogain::MESH_TIME - 0.1f); i += 1.0f)
+            {
+                float ax = width + dx*i;
+                cv->line(ax, 0, ax, height);
+            }
+
+            // Draw horizontal lines
+            cv->set_color_rgb(CV_WHITE, 0.5f);
+            for (float i=GAIN_AMP_M_72_DB; i<GAIN_AMP_P_24_DB; i *= GAIN_AMP_P_12_DB)
+            {
+                float ay = height + dy*(logf(i*zy));
+                cv->line(0, ay, width, ay);
+            }
+
+            // Allocate buffer: t, gain, x, y
+            pIDisplay           = core::IDBuffer::reuse(pIDisplay, 4, width);
+            core::IDBuffer *b   = pIDisplay;
+            if (b == NULL)
+                return false;
+
+            float r             = meta::autogain::MESH_POINTS/float(width);
+
+            // Fill time array
+            float *t            = b->v[0];
+            for (size_t j=0; j<width; ++j)
+                t[j]            = vTimePoints[size_t(r*j)];
+
+            cv->set_line_width(2.0f);
+
+            // Draw gain curve
+            {
+                // Initialize values
+                float *ft       = sGainGraph.data();
+                float *g        = b->v[1];
+                for (size_t k=0; k<width; ++k)
+                    g[k]            = ft[size_t(r*k)];
+
+                // Initialize coords
+                dsp::fill(b->v[2], width, width);
+                dsp::fill(b->v[3], height, width);
+                dsp::fmadd_k3(b->v[2], t, dx, width);
+                dsp::axis_apply_log1(b->v[3], g, zy, dy, width);
+
+                // Draw channel
+                cv->set_color_rgb((bypassing) ? CV_SILVER : CV_BRIGHT_BLUE);
+                cv->draw_lines(b->v[2], b->v[3], width);
+            }
+
+            // Draw threshold
+            cv->set_color_rgb(CV_MAGENTA, 0.5f);
+            cv->set_line_width(1.0);
+            {
+                float ay = height + dy*(logf(fLevel*zy));
+                cv->line(0, ay, width, ay);
+            }
+
+            return true;
         }
 
         void autogain::dump(dspu::IStateDumper *v) const

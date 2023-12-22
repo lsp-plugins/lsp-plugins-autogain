@@ -25,7 +25,7 @@
 
 #define LSP_PLUGINS_AUTOGAIN_VERSION_MAJOR       1
 #define LSP_PLUGINS_AUTOGAIN_VERSION_MINOR       0
-#define LSP_PLUGINS_AUTOGAIN_VERSION_MICRO       1
+#define LSP_PLUGINS_AUTOGAIN_VERSION_MICRO       2
 
 #define LSP_PLUGINS_AUTOGAIN_VERSION  \
     LSP_MODULE_VERSION( \
@@ -187,6 +187,7 @@ namespace lsp
         {
             "Autogain Mono",
             "Autogain Mono",
+            "Autogain Mono",
             "AG1M",
             &developers::v_sadovnikov,
             "autogain_mono",
@@ -199,7 +200,7 @@ namespace lsp
             LSP_PLUGINS_AUTOGAIN_VERSION,
             plugin_classes,
             clap_features_mono,
-            E_DUMP_STATE,
+            E_DUMP_STATE | E_INLINE_DISPLAY,
             autogain_mono_ports,
             "util/autogain.xml",
             NULL,
@@ -209,6 +210,7 @@ namespace lsp
 
         const plugin_t autogain_stereo =
         {
+            "Autogain Stereo",
             "Autogain Stereo",
             "Autogain Stereo",
             "AG1S",
@@ -223,7 +225,7 @@ namespace lsp
             LSP_PLUGINS_AUTOGAIN_VERSION,
             plugin_classes,
             clap_features_stereo,
-            E_DUMP_STATE,
+            E_DUMP_STATE | E_INLINE_DISPLAY,
             autogain_stereo_ports,
             "util/autogain.xml",
             NULL,
@@ -233,6 +235,7 @@ namespace lsp
 
         const plugin_t sc_autogain_mono =
         {
+            "Sidechain Autogain Mono",
             "Sidechain Autogain Mono",
             "Sidechain Autogain Mono",
             "SCAG1M",
@@ -247,7 +250,7 @@ namespace lsp
             LSP_PLUGINS_AUTOGAIN_VERSION,
             plugin_classes,
             clap_features_mono,
-            E_DUMP_STATE,
+            E_DUMP_STATE | E_INLINE_DISPLAY,
             sc_autogain_mono_ports,
             "util/autogain.xml",
             NULL,
@@ -257,6 +260,7 @@ namespace lsp
 
         const plugin_t sc_autogain_stereo =
         {
+            "Sidechain Autogain Stereo",
             "Sidechain Autogain Stereo",
             "Sidechain Autogain Stereo",
             "SCAG1S",
@@ -271,7 +275,7 @@ namespace lsp
             LSP_PLUGINS_AUTOGAIN_VERSION,
             plugin_classes,
             clap_features_stereo,
-            E_DUMP_STATE,
+            E_DUMP_STATE | E_INLINE_DISPLAY,
             sc_autogain_stereo_ports,
             "util/autogain.xml",
             NULL,

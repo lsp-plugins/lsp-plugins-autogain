@@ -2,6 +2,10 @@
 * RECENT CHANGES
 *******************************************************************************
 
+=== 1.0.2 ===
+* Added missing inline display to the plugin.
+* Updated build scripts and dependencies.
+
 === 1.0.1 ===
 * Fixed cracling sound caused by small buffer gaps.
 * Updated build scripts and dependencies.

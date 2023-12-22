@@ -30,14 +30,14 @@
 
 				<!-- Meshes -->
 				<ui:with color.a="0.2">
-				<mesh id="gr_in_l" width="2" color="loudness_in_long" visibility=":e_in_l" />
-				<mesh id="gr_in_s" width="1" color="loudness_in_short" visibility=":e_in_s" />
-				<mesh id="gr_sc_l" width="2" color="loudness_sc_long" visibility=":e_sc_l" />
-				<mesh id="gr_sc_s" width="1" color="loudness_sc_short" visibility=":e_sc_s" />
-				<mesh id="gr_out_l" width="2" color="loudness_out_long" visibility=":e_out_l" />
-				<mesh id="gr_out_s" width="1" color="loudness_out_short" visibility=":e_out_s" />
-				<mesh id="gr_g" width="2" color="blue" visibility=":e_g" />
-			</ui:with>
+					<mesh id="gr_in_l" width="2" color="loudness_in_long" visibility=":e_in_l" />
+					<mesh id="gr_in_s" width="1" color="loudness_in_short" visibility=":e_in_s" />
+					<mesh id="gr_sc_l" width="2" color="loudness_sc_long" visibility=":e_sc_l" />
+					<mesh id="gr_sc_s" width="1" color="loudness_sc_short" visibility=":e_sc_s" />
+					<mesh id="gr_out_l" width="2" color="loudness_out_long" visibility=":e_out_l" />
+					<mesh id="gr_out_s" width="1" color="loudness_out_short" visibility=":e_out_s" />
+					<mesh id="gr_g" width="2" color="blue" visibility=":e_g" />
+				</ui:with>
 
 				<!-- Markers -->
 				<ui:with
@@ -53,21 +53,21 @@
 					lcolor.a="0.8"
 					hlcolor.a="0.6"
 					pointer="vsize">
-				<marker
-					id="level"
-					color="loudness_level"
-					hcolor="loudness_level"
-					lcolor="loudness_level"
-					hlcolor="loudness_level"
-					/>
-				<marker
-					id="silence"
-					color="loudness_silence"
-					hcolor="loudness_silence"
-					lcolor="loudness_silence"
-					hlcolor="loudness_silence"
-					 />
-				 </ui:with>
+					<marker
+						id="level"
+						color="loudness_level"
+						hcolor="loudness_level"
+						lcolor="loudness_level"
+						hlcolor="loudness_level"
+						/>
+					<marker
+						id="silence"
+						color="loudness_silence"
+						hcolor="loudness_silence"
+						lcolor="loudness_silence"
+						hlcolor="loudness_silence"
+						 />
+				</ui:with>
 
 				<!-- Text -->
 				<ui:with x="4" halign="1" valign="1">
@@ -82,6 +82,17 @@
 					<text y="-84 db" text="${t}" x="${t}" halign="-1" valign="1"/>
 					<text y="-84 db" text="${t}.5" x="${t}.5" halign="-1" valign="1"/>
 				</ui:for>
+				
+				<text
+					ox="0" oy="2"
+					x="0" y=":level"
+					halign="-1" valign="1"
+					text="labels.metering.level" color="loudness_level" />
+				<text
+					ox="0" oy="2"
+					x="0" y=":silence"
+					halign="-1" valign="1"
+					text="labels.silence" color="loudness_silence" />
 
 			</graph>
 		</group>
