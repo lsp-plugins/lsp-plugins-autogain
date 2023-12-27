@@ -88,8 +88,8 @@ namespace lsp
             fLScGain        = 0.0f;
             fSScGain        = 0.0f;
             fGain           = 0.0f;
-            fOldLevel       = dspu::lufs_to_gain(meta::autogain::LEVEL_DFL);
-            fLevel          = dspu::lufs_to_gain(meta::autogain::LEVEL_DFL);
+            fOldLevel       = dspu::db_to_gain(meta::autogain::LEVEL_DFL);
+            fLevel          = dspu::db_to_gain(meta::autogain::LEVEL_DFL);
             fOldPreamp      = 0.0f;
             fPreamp         = 1.0f;
 
@@ -415,7 +415,7 @@ namespace lsp
             dspu::bs::weighting_t weight    = decode_weighting(pWeighting->value());
 
             // Update level
-            fLevel                          = dspu::lufs_to_gain(pLevel->value());
+            fLevel                          = dspu::db_to_gain(pLevel->value());
             enScMode                        = (pScMode != NULL) ? size_t(pScMode->value()) : meta::autogain::SCMODE_DFL;
             fPreamp                         = dspu::db_to_gain(pScPreamp->value());
             size_t lookahead                = dspu::millis_to_samples(fSampleRate, pLookahead->value());
@@ -430,7 +430,7 @@ namespace lsp
                 calc_gain_speed(GCT_SHORT_GROW),
                 calc_gain_speed(GCT_SHORT_FALL));
             sAutoGain.set_silence_threshold(
-                dspu::lufs_to_gain(pSilence->value()));
+                dspu::db_to_gain(pSilence->value()));
             sAutoGain.enable_quick_amplifier(pQAmp->value() >= 0.5f);
             sAutoGain.set_max_gain(
                 dspu::db_to_gain(pAmpGain->value()),
