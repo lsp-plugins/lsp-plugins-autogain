@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2023 Linux Studio Plugins Project <https://lsp-plug.in/>
- *           (C) 2023 Vladimir Sadovnikov <sadko4u@gmail.com>
+ * Copyright (C) 2024 Linux Studio Plugins Project <https://lsp-plug.in/>
+ *           (C) 2024 Vladimir Sadovnikov <sadko4u@gmail.com>
  *
  * This file is part of lsp-plugins-autogain
  * Created on: 21 сен 2023 г.
@@ -194,6 +194,8 @@ namespace lsp
             LSP_LV2_URI("autogain_mono"),
             LSP_LV2UI_URI("autogain_mono"),
             "ag1m",
+            LSP_VST3_UID("ag1m    ag1m"),
+            LSP_VST3UI_UID("ag1m    ag1m"),
             LSP_LADSPA_AUTOGAIN_BASE + 0,
             LSP_LADSPA_URI("autogain_mono"),
             LSP_CLAP_URI("autogain_mono"),
@@ -219,6 +221,8 @@ namespace lsp
             LSP_LV2_URI("autogain_stereo"),
             LSP_LV2UI_URI("autogain_stereo"),
             "ag1s",
+            LSP_VST3_UID("ag1s    ag1s"),
+            LSP_VST3UI_UID("ag1s    ag1s"),
             LSP_LADSPA_AUTOGAIN_BASE + 1,
             LSP_LADSPA_URI("autogain_stereo"),
             LSP_CLAP_URI("autogain_stereo"),
@@ -244,6 +248,8 @@ namespace lsp
             LSP_LV2_URI("sc_autogain_mono"),
             LSP_LV2UI_URI("sc_autogain_mono"),
             "ag1M",
+            LSP_VST3_UID("scag1m  ag1M"),
+            LSP_VST3UI_UID("scag1m  ag1M"),
             LSP_LADSPA_AUTOGAIN_BASE + 2,
             LSP_LADSPA_URI("sc_autogain_mono"),
             LSP_CLAP_URI("sc_autogain_mono"),
@@ -269,6 +275,8 @@ namespace lsp
             LSP_LV2_URI("sc_autogain_stereo"),
             LSP_LV2UI_URI("sc_autogain_stereo"),
             "ag1S",
+            LSP_VST3_UID("scag1s  ag1S"),
+            LSP_VST3UI_UID("scag1s  ag1S"),
             LSP_LADSPA_AUTOGAIN_BASE + 3,
             LSP_LADSPA_URI("sc_autogain_stereo"),
             LSP_CLAP_URI("sc_autogain_stereo"),
