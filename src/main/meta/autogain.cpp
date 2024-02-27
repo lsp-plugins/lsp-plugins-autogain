@@ -87,7 +87,7 @@ namespace lsp
             METER_GAIN("g_sc_l", "Sidechain loudness meter for long period", GAIN_AMP_P_48_DB), \
             METER_GAIN("g_sc_s", "Sidechain loudness meter for short period", GAIN_AMP_P_48_DB), \
             MESH("gr_sc_l", "Sidechain loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
-            MESH("gr_sc_s", "Sidechain loudness graph for short period", 2, meta::autogain::MESH_POINTS)
+            MESH("gr_sc_s", "Sidechain loudness graph for short period", 2, meta::autogain::MESH_POINTS + 2)
 
         #define AUTOGAIN_COMMON \
             LOG_CONTROL("lperiod", "Loudness measuring long period", U_MSEC, meta::autogain::LONG_PERIOD), \
@@ -122,10 +122,10 @@ namespace lsp
             METER_GAIN("g_g", "Gain correction meter", GAIN_AMP_P_120_DB), \
             \
             MESH("gr_in_l", "Input loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
-            MESH("gr_in_s", "Input loudness graph for short period", 2, meta::autogain::MESH_POINTS), \
+            MESH("gr_in_s", "Input loudness graph for short period", 2, meta::autogain::MESH_POINTS + 2), \
             MESH("gr_out_l", "Output loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
-            MESH("gr_out_s", "Output loudness graph for short period", 2, meta::autogain::MESH_POINTS), \
-            MESH("gr_g", "Gain correction graph", 2, meta::autogain::MESH_POINTS)
+            MESH("gr_out_s", "Output loudness graph for short period", 2, meta::autogain::MESH_POINTS + 2), \
+            MESH("gr_g", "Gain correction graph", 2, meta::autogain::MESH_POINTS + 4)
 
 
         static const port_t autogain_mono_ports[] =
