@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2023 Linux Studio Plugins Project <https://lsp-plug.in/>
- *           (C) 2023 Vladimir Sadovnikov <sadko4u@gmail.com>
+ * Copyright (C) 2024 Linux Studio Plugins Project <https://lsp-plug.in/>
+ *           (C) 2024 Vladimir Sadovnikov <sadko4u@gmail.com>
  *
  * This file is part of lsp-plugins-autogain
  * Created on: 21 сен 2023 г.
@@ -25,7 +25,7 @@
 
 #define LSP_PLUGINS_AUTOGAIN_VERSION_MAJOR       1
 #define LSP_PLUGINS_AUTOGAIN_VERSION_MINOR       0
-#define LSP_PLUGINS_AUTOGAIN_VERSION_MICRO       2
+#define LSP_PLUGINS_AUTOGAIN_VERSION_MICRO       3
 
 #define LSP_PLUGINS_AUTOGAIN_VERSION  \
     LSP_MODULE_VERSION( \
@@ -87,7 +87,7 @@ namespace lsp
             METER_GAIN("g_sc_l", "Sidechain loudness meter for long period", GAIN_AMP_P_48_DB), \
             METER_GAIN("g_sc_s", "Sidechain loudness meter for short period", GAIN_AMP_P_48_DB), \
             MESH("gr_sc_l", "Sidechain loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
-            MESH("gr_sc_s", "Sidechain loudness graph for short period", 2, meta::autogain::MESH_POINTS)
+            MESH("gr_sc_s", "Sidechain loudness graph for short period", 2, meta::autogain::MESH_POINTS + 2)
 
         #define AUTOGAIN_COMMON \
             LOG_CONTROL("lperiod", "Loudness measuring long period", U_MSEC, meta::autogain::LONG_PERIOD), \
@@ -122,10 +122,10 @@ namespace lsp
             METER_GAIN("g_g", "Gain correction meter", GAIN_AMP_P_120_DB), \
             \
             MESH("gr_in_l", "Input loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
-            MESH("gr_in_s", "Input loudness graph for short period", 2, meta::autogain::MESH_POINTS), \
+            MESH("gr_in_s", "Input loudness graph for short period", 2, meta::autogain::MESH_POINTS + 2), \
             MESH("gr_out_l", "Output loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
-            MESH("gr_out_s", "Output loudness graph for short period", 2, meta::autogain::MESH_POINTS), \
-            MESH("gr_g", "Gain correction graph", 2, meta::autogain::MESH_POINTS)
+            MESH("gr_out_s", "Output loudness graph for short period", 2, meta::autogain::MESH_POINTS + 2), \
+            MESH("gr_g", "Gain correction graph", 2, meta::autogain::MESH_POINTS + 4)
 
 
         static const port_t autogain_mono_ports[] =
@@ -194,6 +194,8 @@ namespace lsp
             LSP_LV2_URI("autogain_mono"),
             LSP_LV2UI_URI("autogain_mono"),
             "ag1m",
+            LSP_VST3_UID("ag1m    ag1m"),
+            LSP_VST3UI_UID("ag1m    ag1m"),
             LSP_LADSPA_AUTOGAIN_BASE + 0,
             LSP_LADSPA_URI("autogain_mono"),
             LSP_CLAP_URI("autogain_mono"),
@@ -219,6 +221,8 @@ namespace lsp
             LSP_LV2_URI("autogain_stereo"),
             LSP_LV2UI_URI("autogain_stereo"),
             "ag1s",
+            LSP_VST3_UID("ag1s    ag1s"),
+            LSP_VST3UI_UID("ag1s    ag1s"),
             LSP_LADSPA_AUTOGAIN_BASE + 1,
             LSP_LADSPA_URI("autogain_stereo"),
             LSP_CLAP_URI("autogain_stereo"),
@@ -244,6 +248,8 @@ namespace lsp
             LSP_LV2_URI("sc_autogain_mono"),
             LSP_LV2UI_URI("sc_autogain_mono"),
             "ag1M",
+            LSP_VST3_UID("scag1m  ag1M"),
+            LSP_VST3UI_UID("scag1m  ag1M"),
             LSP_LADSPA_AUTOGAIN_BASE + 2,
             LSP_LADSPA_URI("sc_autogain_mono"),
             LSP_CLAP_URI("sc_autogain_mono"),
@@ -269,6 +275,8 @@ namespace lsp
             LSP_LV2_URI("sc_autogain_stereo"),
             LSP_LV2UI_URI("sc_autogain_stereo"),
             "ag1S",
+            LSP_VST3_UID("scag1s  ag1S"),
+            LSP_VST3UI_UID("scag1s  ag1S"),
             LSP_LADSPA_AUTOGAIN_BASE + 3,
             LSP_LADSPA_URI("sc_autogain_stereo"),
             LSP_CLAP_URI("sc_autogain_stereo"),

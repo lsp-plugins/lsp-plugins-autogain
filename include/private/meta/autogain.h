@@ -137,7 +137,7 @@ namespace lsp
                 SCMODE_CONTROL,
                 SCMODE_MATCH,
 
-                SCMODE_DFL = SCMODE_INTERNAL
+                SCMODE_DFL = SCMODE_CONTROL
             };
 
         } autogain;

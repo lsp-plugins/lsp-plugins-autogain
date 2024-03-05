@@ -88,8 +88,8 @@ namespace lsp
             fLScGain        = 0.0f;
             fSScGain        = 0.0f;
             fGain           = 0.0f;
-            fOldLevel       = dspu::lufs_to_gain(meta::autogain::LEVEL_DFL);
-            fLevel          = dspu::lufs_to_gain(meta::autogain::LEVEL_DFL);
+            fOldLevel       = dspu::db_to_gain(meta::autogain::LEVEL_DFL);
+            fLevel          = dspu::db_to_gain(meta::autogain::LEVEL_DFL);
             fOldPreamp      = 0.0f;
             fPreamp         = 1.0f;
 
@@ -415,7 +415,7 @@ namespace lsp
             dspu::bs::weighting_t weight    = decode_weighting(pWeighting->value());
 
             // Update level
-            fLevel                          = dspu::lufs_to_gain(pLevel->value());
+            fLevel                          = dspu::db_to_gain(pLevel->value());
             enScMode                        = (pScMode != NULL) ? size_t(pScMode->value()) : meta::autogain::SCMODE_DFL;
             fPreamp                         = dspu::db_to_gain(pScPreamp->value());
             size_t lookahead                = dspu::millis_to_samples(fSampleRate, pLookahead->value());
@@ -430,7 +430,7 @@ namespace lsp
                 calc_gain_speed(GCT_SHORT_GROW),
                 calc_gain_speed(GCT_SHORT_FALL));
             sAutoGain.set_silence_threshold(
-                dspu::lufs_to_gain(pSilence->value()));
+                dspu::db_to_gain(pSilence->value()));
             sAutoGain.enable_quick_amplifier(pQAmp->value() >= 0.5f);
             sAutoGain.set_max_gain(
                 dspu::db_to_gain(pAmpGain->value()),
@@ -761,9 +761,22 @@ namespace lsp
             mesh    = pSInGraph->buffer<plug::mesh_t>();
             if ((mesh != NULL) && (mesh->isEmpty()))
             {
-                dsp::copy(mesh->pvData[0], vTimePoints, meta::autogain::MESH_POINTS);
-                dsp::copy(mesh->pvData[1], sSInGraph.data(), meta::autogain::MESH_POINTS);
-                mesh->data(2, meta::autogain::MESH_POINTS);
+                float *x = mesh->pvData[0];
+                float *y = mesh->pvData[1];
+
+                dsp::copy(&x[1], vTimePoints, meta::autogain::MESH_POINTS);
+                dsp::copy(&y[1], sSInGraph.data(), meta::autogain::MESH_POINTS);
+
+
+                x[0] = x[1];
+                y[0] = 0.0f;
+
+                x += meta::autogain::MESH_POINTS + 1;
+                y += meta::autogain::MESH_POINTS + 1;
+                x[0] = x[-1];
+                y[0] = 0.0f;
+
+                mesh->data(2, meta::autogain::MESH_POINTS + 2);
             }
 
             mesh    = pLOutGraph->buffer<plug::mesh_t>();
@@ -777,9 +790,22 @@ namespace lsp
             mesh    = pSOutGraph->buffer<plug::mesh_t>();
             if ((mesh != NULL) && (mesh->isEmpty()))
             {
-                dsp::copy(mesh->pvData[0], vTimePoints, meta::autogain::MESH_POINTS);
-                dsp::copy(mesh->pvData[1], sSOutGraph.data(), meta::autogain::MESH_POINTS);
-                mesh->data(2, meta::autogain::MESH_POINTS);
+                float *x = mesh->pvData[0];
+                float *y = mesh->pvData[1];
+
+                dsp::copy(&x[1], vTimePoints, meta::autogain::MESH_POINTS);
+                dsp::copy(&y[1], sSInGraph.data(), meta::autogain::MESH_POINTS);
+
+
+                x[0] = x[1];
+                y[0] = 0.0f;
+
+                x += meta::autogain::MESH_POINTS + 1;
+                y += meta::autogain::MESH_POINTS + 1;
+                x[0] = x[-1];
+                y[0] = 0.0f;
+
+                mesh->data(2, meta::autogain::MESH_POINTS + 2);
             }
 
             // Output sidechain metering
@@ -796,18 +822,47 @@ namespace lsp
                 mesh    = pSScGraph->buffer<plug::mesh_t>();
                 if ((mesh != NULL) && (mesh->isEmpty()))
                 {
-                    dsp::copy(mesh->pvData[0], vTimePoints, meta::autogain::MESH_POINTS);
-                    dsp::copy(mesh->pvData[1], sSScGraph.data(), meta::autogain::MESH_POINTS);
-                    mesh->data(2, meta::autogain::MESH_POINTS);
+                    float *x = mesh->pvData[0];
+                    float *y = mesh->pvData[1];
+
+                    dsp::copy(&x[1], vTimePoints, meta::autogain::MESH_POINTS);
+                    dsp::copy(&y[1], sSInGraph.data(), meta::autogain::MESH_POINTS);
+
+
+                    x[0] = x[1];
+                    y[0] = 0.0f;
+
+                    x += meta::autogain::MESH_POINTS + 1;
+                    y += meta::autogain::MESH_POINTS + 1;
+                    x[0] = x[-1];
+                    y[0] = 0.0f;
+
+                    mesh->data(2, meta::autogain::MESH_POINTS + 2);
                 }
             }
 
             mesh    = pGainGraph->buffer<plug::mesh_t>();
             if ((mesh != NULL) && (mesh->isEmpty()))
             {
-                dsp::copy(mesh->pvData[0], vTimePoints, meta::autogain::MESH_POINTS);
-                dsp::copy(mesh->pvData[1], sGainGraph.data(), meta::autogain::MESH_POINTS);
-                mesh->data(2, meta::autogain::MESH_POINTS);
+                float *x = mesh->pvData[0];
+                float *y = mesh->pvData[1];
+
+                dsp::copy(&x[2], vTimePoints, meta::autogain::MESH_POINTS);
+                dsp::copy(&y[2], sGainGraph.data(), meta::autogain::MESH_POINTS);
+
+                x[0] = x[2] + 0.5f;
+                x[1] = x[0];
+                y[0] = 1.0f;
+                y[1] = y[2];
+
+                x += meta::autogain::MESH_POINTS + 2;
+                y += meta::autogain::MESH_POINTS + 2;
+                x[0] = x[-1] - 0.5f;
+                y[0] = y[-1];
+                x[1] = x[0];
+                y[1] = 1.0f;
+
+                mesh->data(2, meta::autogain::MESH_POINTS + 4);
             }
         }
 
