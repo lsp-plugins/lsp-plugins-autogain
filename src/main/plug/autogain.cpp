@@ -287,7 +287,7 @@ namespace lsp
             BIND_PORT(pGainGraph);
 
             // Fill values
-            dsp::fill_zero(vEmptyBuffer, szof_buffer);
+            dsp::fill_zero(vEmptyBuffer, BUFFER_SIZE);
 
             float k     = meta::autogain::MESH_TIME / (meta::autogain::MESH_POINTS - 1);
             for (size_t i=0; i<meta::autogain::MESH_POINTS; ++i)
