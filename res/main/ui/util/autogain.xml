@@ -66,12 +66,10 @@
 		</group>
 
 		<cell rows="2">
-			<grid rows="3" cols="${ex :scmode ? 4 : 3}" hfill="false" hexpand="false" hspacing="4">
+			<grid rows="3" cols="4" hfill="false" hexpand="false" hspacing="4">
 				<ui:with bg.color="bg_schema" vfill="false">
 					<label text="labels.chan.in" pad.v="2"/>
-					<ui:if test="ex :scmode">
-						<label text="labels.sc.SC" pad.v="2"/>
-					</ui:if>
+					<label text="labels.sc.SC" pad.v="2"/>
 					<label text="labels.gain" pad.v="2"/>
 					<label text="labels.chan.out" pad.v="2"/>
 
@@ -79,12 +77,10 @@
 						<button id="e_in_l" text="labels.loudness_L" height="10" width="22" ui:inject="Button_cyan_6" led="true"/>
 						<button id="e_in_s" text="labels.loudness_S" height="10" width="22" ui:inject="Button_cyan_6" led="true"/>
 					</hbox>
-					<ui:if test="ex :scmode">
-						<hbox pad.h="2">
-							<button id="e_sc_l" text="labels.loudness_L" height="10" width="22" ui:inject="Button_orange_6" led="true"/>
-							<button id="e_sc_s" text="labels.loudness_S" height="10" width="22" ui:inject="Button_orange_6" led="true"/>
-						</hbox>
-					</ui:if>
+					<hbox pad.h="2">
+						<button id="e_sc_l" text="labels.loudness_L" height="10" width="22" ui:inject="Button_orange_6" led="true"/>
+						<button id="e_sc_s" text="labels.loudness_S" height="10" width="22" ui:inject="Button_orange_6" led="true"/>
+					</hbox>
 					<button id="e_g" text="labels.chan.on" height="10" width="22" ui:inject="Button_blue_6" led="true"/>
 					<hbox pad.h="2">
 						<button id="e_out_l" text="labels.loudness_L" height="10" width="22" ui:inject="Button_green_6" led="true"/>
@@ -102,16 +98,14 @@
 					</ledmeter>
 				</hbox>
 				<!-- Sidechain level meter -->
-				<ui:if test="ex :scmode">
-					<hbox bg.color="bg_schema" pad.h="2">
-						<ledmeter vexpand="true" height.min="256" angle="1">
-							<ledchannel id="g_sc_l" min="-84 db" max="24 db" log="true" type="peak" release="1" value.color="loudness_sc_long"/>
-						</ledmeter>
-						<ledmeter vexpand="true" height.min="256" angle="1">
-							<ledchannel id="g_sc_s" min="-84 db" max="24 db" log="true" type="peak" release="1" value.color="loudness_sc_short"/>
-						</ledmeter>
-					</hbox>
-				</ui:if>
+				<hbox bg.color="bg_schema" pad.h="2">
+					<ledmeter vexpand="true" height.min="256" angle="1">
+						<ledchannel id="g_sc_l" min="-84 db" max="24 db" log="true" type="peak" release="1" value.color="loudness_sc_long"/>
+					</ledmeter>
+					<ledmeter vexpand="true" height.min="256" angle="1">
+						<ledchannel id="g_sc_s" min="-84 db" max="24 db" log="true" type="peak" release="1" value.color="loudness_sc_short"/>
+					</ledmeter>
+				</hbox>
 				<!-- Gain correction level meter -->
 				<ledmeter vexpand="true" height.min="256" angle="1" pad.h="2">
 					<ledchannel id="g_g" min="-84 db" max="84 db" log="true" type="peak" release="1" balance="0 db" balance.visibility="true" value.color="gain"/>
@@ -133,10 +127,10 @@
 			<label text="labels.weighting" pad.r="6"/>
 			<combo id="weight" pad.v="4"/>
 
-			<ui:if test="ex :scmode">
-				<label text="labels.sc.sc_mode" pad.h="6"/>
-				<combo id="scmode"/>
-			</ui:if>
+			<label text="labels.sc.sc_mode" pad.h="6"/>
+			<combo id="scmode"/>
+			
+			<shmlink id="link" />
 
 			<void hexpand="true"/>
 		</hbox>

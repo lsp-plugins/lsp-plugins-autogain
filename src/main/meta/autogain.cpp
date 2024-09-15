@@ -41,8 +41,18 @@ namespace lsp
         static const port_item_t sc_modes[] =
         {
             { "Internal",       "autogain.sc.internal"      },
+            { "Control Link",   "autogain.sc.control_link"  },
+            { "Match Link",     "autogain.sc.match_link"    },
+            { NULL, NULL }
+        };
+
+        static const port_item_t sc_modes_sc[] =
+        {
+            { "Internal",       "autogain.sc.internal"      },
             { "Control",        "autogain.sc.control"       },
             { "Match",          "autogain.sc.match"         },
+            { "Control Link",   "autogain.sc.control_link"  },
+            { "Match Link",     "autogain.sc.match_link"    },
             { NULL, NULL }
         };
 
@@ -75,19 +85,31 @@ namespace lsp
             { NULL, NULL }
         };
 
-        #define AUTOGAIN_INT_SC \
-            CONTROL("preamp", "Sidechain preamp", U_DB, meta::autogain::SC_PREAMP), \
-            CONTROL("lkahead", "Sidechain lookahead", U_MSEC, meta::autogain::SC_LOOKAHEAD)
+        #define AUTOGAIN_LINK_MONO \
+            OPT_RETURN_NAME("link", "Side-chain shared memory link name"), \
+            OPT_AUDIO_RETURN("scl", "Side-chain shared memory link input", 0, "link")
 
-        #define AUTOGAIN_EXT_SC \
-            AUTOGAIN_INT_SC, \
-            COMBO("scmode", "Sidechain mode", meta::autogain::SCMODE_DFL, sc_modes), \
+        #define AUTOGAIN_LINK_STEREO \
+            OPT_RETURN_NAME("link", "Side-chain shared memory link name"), \
+            OPT_AUDIO_RETURN("scl_l", "Side-chain shared memory link input Left", 0, "link"), \
+            OPT_AUDIO_RETURN("scl_r", "Side-chain shared memory link input Right", 1, "link")
+
+        #define AUTOGAIN_COMMON_SC(combo, combo_dfl) \
+            CONTROL("preamp", "Sidechain preamp", U_DB, meta::autogain::SC_PREAMP), \
+            CONTROL("lkahead", "Sidechain lookahead", U_MSEC, meta::autogain::SC_LOOKAHEAD), \
+            COMBO("scmode", "Sidechain mode", combo_dfl, combo), \
             SWITCH("e_sc_l", "Sidechain metering enable for long period", 1.0f), \
             SWITCH("e_sc_s", "Sidechain metering enable for short period", 1.0f), \
             METER_GAIN("g_sc_l", "Sidechain loudness meter for long period", GAIN_AMP_P_48_DB), \
             METER_GAIN("g_sc_s", "Sidechain loudness meter for short period", GAIN_AMP_P_48_DB), \
             MESH("gr_sc_l", "Sidechain loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
             MESH("gr_sc_s", "Sidechain loudness graph for short period", 2, meta::autogain::MESH_POINTS + 2)
+
+        #define AUTOGAIN_INT_SC \
+            AUTOGAIN_COMMON_SC(sc_modes, meta::autogain::SCMODE_DFL)
+
+        #define AUTOGAIN_EXT_SC \
+            AUTOGAIN_COMMON_SC(sc_modes_sc, meta::autogain::SCMODE_DFL_SC)
 
         #define AUTOGAIN_COMMON \
             LOG_CONTROL("lperiod", "Loudness measuring long period", U_MSEC, meta::autogain::LONG_PERIOD), \
@@ -132,6 +154,7 @@ namespace lsp
         {
             PORTS_MONO_PLUGIN,
             BYPASS,
+            AUTOGAIN_LINK_MONO,
             AUTOGAIN_INT_SC,
             AUTOGAIN_COMMON,
 
@@ -142,6 +165,7 @@ namespace lsp
         {
             PORTS_STEREO_PLUGIN,
             BYPASS,
+            AUTOGAIN_LINK_STEREO,
             AUTOGAIN_INT_SC,
             AUTOGAIN_COMMON,
 
@@ -153,6 +177,7 @@ namespace lsp
             PORTS_MONO_PLUGIN,
             PORTS_MONO_SIDECHAIN,
             BYPASS,
+            AUTOGAIN_LINK_MONO,
             AUTOGAIN_EXT_SC,
             AUTOGAIN_COMMON,
 
@@ -164,6 +189,7 @@ namespace lsp
             PORTS_STEREO_PLUGIN,
             PORTS_STEREO_SIDECHAIN,
             BYPASS,
+            AUTOGAIN_LINK_STEREO,
             AUTOGAIN_EXT_SC,
             AUTOGAIN_COMMON,
 
