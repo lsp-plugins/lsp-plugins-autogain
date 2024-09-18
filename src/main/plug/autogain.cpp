@@ -574,7 +574,7 @@ namespace lsp
 
                 c->vIn          = c->pIn->buffer<float>();
                 c->vScIn        = (c->pScIn != NULL) ? c->pScIn->buffer<float>() : c->vIn;
-                c->vShmIn       = vEmptyBuffer;
+                c->vShmIn       = NULL;
                 c->vOut         = c->pOut->buffer<float>();
 
                 // Update sidechain bindings
@@ -595,6 +595,27 @@ namespace lsp
             fGain           = 0.0f;
         }
 
+        const float *autogain::select_buffer(const channel_t *c) const
+        {
+            switch (enScMode)
+            {
+                case meta::autogain::SCMODE_CONTROL_SC:
+                case meta::autogain::SCMODE_MATCH_SC:
+                    return (c->vScIn != NULL) ? c->vScIn : vEmptyBuffer;
+
+                case meta::autogain::SCMODE_CONTROL_LINK:
+                case meta::autogain::SCMODE_MATCH_LINK:
+                    return (c->vShmIn != NULL) ? c->vShmIn : vEmptyBuffer;
+
+                case meta::autogain::SCMODE_INTERNAL:
+                    return c->vIn;
+                default:
+                    break;
+            }
+
+            return c->vIn;
+        }
+
         void autogain::measure_input_loudness(size_t samples)
         {
             // Bind channels for analysis
@@ -606,23 +627,8 @@ namespace lsp
                 sSInMeter.bind(i, NULL, c->vIn, 0);
 
                 // Process sidechain signal
-                switch (enScMode)
-                {
-                    case meta::autogain::SCMODE_CONTROL_SC:
-                    case meta::autogain::SCMODE_MATCH_SC:
-                        dsp::lramp2(c->vBuffer, c->vScIn, fOldPreamp, fPreamp, samples);
-                        break;
-
-                    case meta::autogain::SCMODE_CONTROL_LINK:
-                    case meta::autogain::SCMODE_MATCH_LINK:
-                        dsp::lramp2(c->vBuffer, c->vShmIn, fOldPreamp, fPreamp, samples);
-                        break;
-
-                    case meta::autogain::SCMODE_INTERNAL:
-                    default:
-                        dsp::lramp2(c->vBuffer, c->vIn, fOldPreamp, fPreamp, samples);
-                        break;
-                }
+                const float *in_buf     = select_buffer(c);
+                dsp::lramp2(c->vBuffer, in_buf, fOldPreamp, fPreamp, samples);
 
                 // Bind sidechain meters
                 sLScMeter.bind(i, NULL, c->vBuffer, 0);
@@ -755,7 +761,8 @@ namespace lsp
                 // Move pointers
                 c->vIn         += samples;
                 c->vScIn       += samples;
-                c->vShmIn      += samples;
+                if (c->vShmIn != NULL)
+                    c->vShmIn      += samples;
                 c->vOut        += samples;
             }
         }

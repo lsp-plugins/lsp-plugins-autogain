@@ -160,6 +160,7 @@ namespace lsp
                 meta::autogain::scmode_t        decode_sidechain_mode(size_t mode);
 
             protected:
+                const float            *select_buffer(const channel_t *c) const;
                 void                    do_destroy();
                 void                    bind_audio_ports();
                 void                    clean_meters();
