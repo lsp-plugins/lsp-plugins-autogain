@@ -129,10 +129,9 @@
 
 			<label text="labels.sc.sc_mode" pad.h="6"/>
 			<combo id="scmode"/>
-			
-			<shmlink id="link" />
-
 			<void hexpand="true"/>
+
+			<shmlink id="link"/>
 		</hbox>
 
 		<!-- Row 4 -->
