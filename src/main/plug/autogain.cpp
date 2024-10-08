@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2023 Linux Studio Plugins Project <https://lsp-plug.in/>
- *           (C) 2023 Vladimir Sadovnikov <sadko4u@gmail.com>
+ * Copyright (C) 2024 Linux Studio Plugins Project <https://lsp-plug.in/>
+ *           (C) 2024 Vladimir Sadovnikov <sadko4u@gmail.com>
  *
  * This file is part of lsp-plugins-autogain
  * Created on: 21 сен 2023 г.
@@ -23,8 +23,10 @@
 #include <lsp-plug.in/common/debug.h>
 #include <lsp-plug.in/dsp/dsp.h>
 #include <lsp-plug.in/dsp-units/units.h>
+#include <lsp-plug.in/plug-fw/core/AudioBuffer.h>
 #include <lsp-plug.in/plug-fw/meta/func.h>
 #include <lsp-plug.in/shared/id_colors.h>
+#include <lsp-plug.in/shared/debug.h>
 
 #include <private/plugins/autogain.h>
 
@@ -33,12 +35,6 @@
 
 namespace lsp
 {
-    static plug::IPort *TRACE_PORT(plug::IPort *p)
-    {
-        lsp_trace("  port id=%s", (p)->metadata()->id);
-        return p;
-    }
-
     namespace plugins
     {
         /* Gain numberators multiplied by 10 */
@@ -96,6 +92,7 @@ namespace lsp
             vLBuffer        = NULL;
             vSBuffer        = NULL;
             vGainBuffer     = NULL;
+            vEmptyBuffer    = NULL;
             vTimePoints     = NULL;
 
             pBypass         = NULL;
@@ -159,6 +156,7 @@ namespace lsp
                 szof_buffer +       // vLBuffer
                 szof_buffer +       // vSBuffer
                 szof_buffer +       // vGainBuffer
+                szof_buffer +       // vEmptyBuffer
                 szof_graph +        // vTimePoints
                 nChannels * (
                     szof_buffer     // vBuffer
@@ -185,16 +183,12 @@ namespace lsp
                 return;
 
             // Initialize pointers to channels and temporary buffer
-            vChannels               = reinterpret_cast<channel_t *>(ptr);
-            ptr                    += szof_channels;
-            vLBuffer                = reinterpret_cast<float *>(ptr);
-            ptr                    += szof_buffer;
-            vSBuffer                = reinterpret_cast<float *>(ptr);
-            ptr                    += szof_buffer;
-            vGainBuffer             = reinterpret_cast<float *>(ptr);
-            ptr                    += szof_buffer;
-            vTimePoints             = reinterpret_cast<float *>(ptr);
-            ptr                    += szof_graph;
+            vChannels               = advance_ptr_bytes<channel_t>(ptr, szof_channels);
+            vLBuffer                = advance_ptr_bytes<float>(ptr, szof_buffer);
+            vSBuffer                = advance_ptr_bytes<float>(ptr, szof_buffer);
+            vGainBuffer             = advance_ptr_bytes<float>(ptr, szof_buffer);
+            vEmptyBuffer            = advance_ptr_bytes<float>(ptr, szof_buffer);
+            vTimePoints             = advance_ptr_bytes<float>(ptr, szof_graph);
 
             for (size_t i=0; i < nChannels; ++i)
             {
@@ -207,11 +201,11 @@ namespace lsp
                 c->vScIn                = NULL;
                 c->vOut                 = NULL;
 
-                c->vBuffer              = reinterpret_cast<float *>(ptr);
-                ptr                    += szof_buffer;
+                c->vBuffer              = advance_ptr_bytes<float>(ptr, szof_buffer);
 
                 c->pIn                  = NULL;
                 c->pScIn                = NULL;
+                c->pShmIn               = NULL;
                 c->pOut                 = NULL;
             }
 
@@ -221,75 +215,80 @@ namespace lsp
 
             // Bind input audio ports
             for (size_t i=0; i<nChannels; ++i)
-                vChannels[i].pIn    = TRACE_PORT(ports[port_id++]);
+                BIND_PORT(vChannels[i].pIn);
 
             // Bind output audio ports
             for (size_t i=0; i<nChannels; ++i)
-                vChannels[i].pOut   = TRACE_PORT(ports[port_id++]);
+                BIND_PORT(vChannels[i].pOut);
 
             // Bind sidechain audio ports
             if (bSidechain)
             {
                 for (size_t i=0; i<nChannels; ++i)
-                    vChannels[i].pScIn  = TRACE_PORT(ports[port_id++]);
+                    BIND_PORT(vChannels[i].pScIn);
             }
 
             // Bind bypass
-            pBypass             = TRACE_PORT(ports[port_id++]);
+            BIND_PORT(pBypass);
+
+            lsp_trace("Binding shared memory link controls");
+            SKIP_PORT("Shared memory link name");
+            for (size_t i=0; i<nChannels; ++i)
+                BIND_PORT(vChannels[i].pShmIn);
 
             // Bind sidechain ports
             lsp_trace("Binding sidechain controls");
-            pScPreamp           = TRACE_PORT(ports[port_id++]);
-            pLookahead          = TRACE_PORT(ports[port_id++]);
-            if (bSidechain)
-            {
-                pScMode             = TRACE_PORT(ports[port_id++]);
-                TRACE_PORT(ports[port_id++]); // Skip enable sidechain metering port for long period
-                TRACE_PORT(ports[port_id++]); // Skip enable sidechain metering port for short period
-                pLScGain            = TRACE_PORT(ports[port_id++]);
-                pSScGain            = TRACE_PORT(ports[port_id++]);
-                pLScGraph           = TRACE_PORT(ports[port_id++]);
-                pSScGraph           = TRACE_PORT(ports[port_id++]);
-            }
+            BIND_PORT(pScPreamp);
+            BIND_PORT(pLookahead);
+
+            BIND_PORT(pScMode);
+            SKIP_PORT("Enable sidechain metering port for long period");
+            SKIP_PORT("Enable sidechain metering port for short period");
+            BIND_PORT(pLScGain);
+            BIND_PORT(pSScGain);
+            BIND_PORT(pLScGraph);
+            BIND_PORT(pSScGraph);
 
             // Bind common ports
             lsp_trace("Binding common controls");
-            pLPeriod            = TRACE_PORT(ports[port_id++]);
-            pSPeriod            = TRACE_PORT(ports[port_id++]);
-            pWeighting          = TRACE_PORT(ports[port_id++]);
-            pLevel              = TRACE_PORT(ports[port_id++]);
-            pDeviation          = TRACE_PORT(ports[port_id++]);
-            pSilence            = TRACE_PORT(ports[port_id++]);
-            pAmpOn              = TRACE_PORT(ports[port_id++]);
-            pAmpGain            = TRACE_PORT(ports[port_id++]);
-            pQAmp               = TRACE_PORT(ports[port_id++]);
+            BIND_PORT(pLPeriod);
+            BIND_PORT(pSPeriod);
+            BIND_PORT(pWeighting);
+            BIND_PORT(pLevel);
+            BIND_PORT(pDeviation);
+            BIND_PORT(pSilence);
+            BIND_PORT(pAmpOn);
+            BIND_PORT(pAmpGain);
+            BIND_PORT(pQAmp);
 
             lsp_trace("Binding gain controls");
             for (size_t i=0; i<GCT_TOTAL; ++i)
             {
                 gcontrol_t *gc  = &vGainCtl[i];
-                gc->pValue      = TRACE_PORT(ports[port_id++]);
-                gc->pPeroid     = TRACE_PORT(ports[port_id++]);
+                BIND_PORT(gc->pValue);
+                BIND_PORT(gc->pPeroid);
             }
 
             lsp_trace("Binding metering controls");
-            TRACE_PORT(ports[port_id++]); // Skip enable input gain metering port for long period
-            TRACE_PORT(ports[port_id++]); // Skip enable input gain metering port for short period
-            TRACE_PORT(ports[port_id++]); // Skip enable output gain metering port for long period
-            TRACE_PORT(ports[port_id++]); // Skip enable output gain metering port for short period
-            TRACE_PORT(ports[port_id++]); // Skip enable gain correction metering
-            pLInGain            = TRACE_PORT(ports[port_id++]);
-            pSInGain            = TRACE_PORT(ports[port_id++]);
-            pLOutGain           = TRACE_PORT(ports[port_id++]);
-            pSOutGain           = TRACE_PORT(ports[port_id++]);
-            pGain               = TRACE_PORT(ports[port_id++]);
-            pLInGraph           = TRACE_PORT(ports[port_id++]);
-            pSInGraph           = TRACE_PORT(ports[port_id++]);
-            pLOutGraph          = TRACE_PORT(ports[port_id++]);
-            pSOutGraph          = TRACE_PORT(ports[port_id++]);
-            pGainGraph          = TRACE_PORT(ports[port_id++]);
+            SKIP_PORT("Enable input gain metering port for long period");
+            SKIP_PORT("Enable input gain metering port for short period");
+            SKIP_PORT("Enable output gain metering port for long period");
+            SKIP_PORT("Enable output gain metering port for short period");
+            SKIP_PORT("Enable gain correction metering");
+            BIND_PORT(pLInGain);
+            BIND_PORT(pSInGain);
+            BIND_PORT(pLOutGain);
+            BIND_PORT(pSOutGain);
+            BIND_PORT(pGain);
+            BIND_PORT(pLInGraph);
+            BIND_PORT(pSInGraph);
+            BIND_PORT(pLOutGraph);
+            BIND_PORT(pSOutGraph);
+            BIND_PORT(pGainGraph);
 
             // Fill values
+            dsp::fill_zero(vEmptyBuffer, BUFFER_SIZE);
+
             float k     = meta::autogain::MESH_TIME / (meta::autogain::MESH_POINTS - 1);
             for (size_t i=0; i<meta::autogain::MESH_POINTS; ++i)
                 vTimePoints[i] =  meta::autogain::MESH_TIME - k*i;
@@ -397,6 +396,34 @@ namespace lsp
             return dspu::bs::WEIGHT_NONE;
         }
 
+        meta::autogain::scmode_t autogain::decode_sidechain_mode(size_t mode)
+        {
+            if (bSidechain)
+            {
+                switch (mode)
+                {
+                    case 0: return meta::autogain::SCMODE_INTERNAL;
+                    case 1: return meta::autogain::SCMODE_CONTROL_SC;
+                    case 2: return meta::autogain::SCMODE_MATCH_SC;
+                    case 3: return meta::autogain::SCMODE_CONTROL_LINK;
+                    case 4: return meta::autogain::SCMODE_MATCH_LINK;
+                    default: break;
+                }
+            }
+            else
+            {
+                switch (mode)
+                {
+                    case 0: return meta::autogain::SCMODE_INTERNAL;
+                    case 1: return meta::autogain::SCMODE_CONTROL_LINK;
+                    case 2: return meta::autogain::SCMODE_MATCH_LINK;
+                    default: break;
+                }
+            }
+
+            return meta::autogain::SCMODE_INTERNAL;
+        }
+
         float autogain::calc_gain_speed(gcontrol_type_t type)
         {
             gcontrol_t *gc  = &vGainCtl[type];
@@ -416,7 +443,7 @@ namespace lsp
 
             // Update level
             fLevel                          = dspu::db_to_gain(pLevel->value());
-            enScMode                        = (pScMode != NULL) ? size_t(pScMode->value()) : meta::autogain::SCMODE_DFL;
+            enScMode                        = decode_sidechain_mode(pScMode->value());
             fPreamp                         = dspu::db_to_gain(pScPreamp->value());
             size_t lookahead                = dspu::millis_to_samples(fSampleRate, pLookahead->value());
 
@@ -547,7 +574,13 @@ namespace lsp
 
                 c->vIn          = c->pIn->buffer<float>();
                 c->vScIn        = (c->pScIn != NULL) ? c->pScIn->buffer<float>() : c->vIn;
+                c->vShmIn       = NULL;
                 c->vOut         = c->pOut->buffer<float>();
+
+                // Update sidechain bindings
+                core::AudioBuffer *buf = c->pShmIn->buffer<core::AudioBuffer>();
+                if ((buf != NULL) && (buf->active()))
+                    c->vShmIn       = buf->buffer();
             }
         }
 
@@ -562,6 +595,27 @@ namespace lsp
             fGain           = 0.0f;
         }
 
+        const float *autogain::select_buffer(const channel_t *c) const
+        {
+            switch (enScMode)
+            {
+                case meta::autogain::SCMODE_CONTROL_SC:
+                case meta::autogain::SCMODE_MATCH_SC:
+                    return (c->vScIn != NULL) ? c->vScIn : vEmptyBuffer;
+
+                case meta::autogain::SCMODE_CONTROL_LINK:
+                case meta::autogain::SCMODE_MATCH_LINK:
+                    return (c->vShmIn != NULL) ? c->vShmIn : vEmptyBuffer;
+
+                case meta::autogain::SCMODE_INTERNAL:
+                    return c->vIn;
+                default:
+                    break;
+            }
+
+            return c->vIn;
+        }
+
         void autogain::measure_input_loudness(size_t samples)
         {
             // Bind channels for analysis
@@ -573,56 +627,36 @@ namespace lsp
                 sSInMeter.bind(i, NULL, c->vIn, 0);
 
                 // Process sidechain signal
-                switch (enScMode)
-                {
-                    case meta::autogain::SCMODE_CONTROL:
-                    case meta::autogain::SCMODE_MATCH:
-                        dsp::lramp2(c->vBuffer, c->vScIn, fOldPreamp, fPreamp, samples);
-                        break;
-
-                    case meta::autogain::SCMODE_INTERNAL:
-                    default:
-                        dsp::lramp2(c->vBuffer, c->vIn, fOldPreamp, fPreamp, samples);
-                        break;
-                }
+                const float *in_buf     = select_buffer(c);
+                dsp::lramp2(c->vBuffer, in_buf, fOldPreamp, fPreamp, samples);
 
                 // Bind sidechain meters
-                if (bSidechain)
-                {
-                    sLScMeter.bind(i, NULL, c->vBuffer, 0);
-                    sSScMeter.bind(i, NULL, c->vBuffer, 0);
-                }
-                else
-                {
-                    sLInMeter.bind(i, NULL, c->vBuffer, 0);
-                    sSInMeter.bind(i, NULL, c->vBuffer, 0);
-                }
+                sLScMeter.bind(i, NULL, c->vBuffer, 0);
+                sSScMeter.bind(i, NULL, c->vBuffer, 0);
             }
             fOldPreamp  = fPreamp;
 
             // Depending on the operating mode, we need to change the order of processing input and sidechain signals
             switch (enScMode)
             {
-                case meta::autogain::SCMODE_MATCH:
+                case meta::autogain::SCMODE_MATCH_SC:
+                case meta::autogain::SCMODE_MATCH_LINK:
                     // First process sidechain signal
-                    if (bSidechain)
-                    {
-                        sLScMeter.process(vLBuffer, samples, dspu::bs::DBFS_TO_LUFS_SHIFT_GAIN);
-                        fLScGain    = lsp_max(fLInGain, dsp::max(vLBuffer, samples));
-                        sLScGraph.process(vLBuffer, samples);
+                    sLScMeter.process(vLBuffer, samples, dspu::bs::DBFS_TO_LUFS_SHIFT_GAIN);
+                    fLScGain    = lsp_max(fLInGain, dsp::max(vLBuffer, samples));
+                    sLScGraph.process(vLBuffer, samples);
 
-                        sSScMeter.process(vSBuffer, samples, dspu::bs::DBFS_TO_LUFS_SHIFT_GAIN);
-                        fSScGain    = lsp_max(fSInGain, dsp::max(vSBuffer, samples));
-                        sSScGraph.process(vSBuffer, samples);
+                    sSScMeter.process(vSBuffer, samples, dspu::bs::DBFS_TO_LUFS_SHIFT_GAIN);
+                    fSScGain    = lsp_max(fSInGain, dsp::max(vSBuffer, samples));
+                    sSScGraph.process(vSBuffer, samples);
 
-                        // Limit the long sidechain signal and put to the buffer
-                        dsp::limit2(
-                            vGainBuffer,
-                            vLBuffer,
-                            meta::autogain::LEVEL_GAIN_MIN,
-                            meta::autogain::LEVEL_GAIN_MAX,
-                            samples);
-                    }
+                    // Limit the long sidechain signal and put to the buffer
+                    dsp::limit2(
+                        vGainBuffer,
+                        vLBuffer,
+                        meta::autogain::LEVEL_GAIN_MIN,
+                        meta::autogain::LEVEL_GAIN_MAX,
+                        samples);
 
                     // Then process input signal as usual
                     sLInMeter.process(vLBuffer, samples, dspu::bs::DBFS_TO_LUFS_SHIFT_GAIN);
@@ -635,7 +669,8 @@ namespace lsp
 
                     break;
 
-                case meta::autogain::SCMODE_CONTROL:
+                case meta::autogain::SCMODE_CONTROL_SC:
+                case meta::autogain::SCMODE_CONTROL_LINK:
                 case meta::autogain::SCMODE_INTERNAL:
                 default:
                     // Process the loudnes of input signal
@@ -648,16 +683,13 @@ namespace lsp
                     sSInGraph.process(vSBuffer, samples);
 
                     // Process the loudness of sidechain signal
-                    if (bSidechain)
-                    {
-                        sLScMeter.process(vLBuffer, samples, dspu::bs::DBFS_TO_LUFS_SHIFT_GAIN);
-                        fLScGain    = lsp_max(fLInGain, dsp::max(vLBuffer, samples));
-                        sLScGraph.process(vLBuffer, samples);
+                    sLScMeter.process(vLBuffer, samples, dspu::bs::DBFS_TO_LUFS_SHIFT_GAIN);
+                    fLScGain    = lsp_max(fLInGain, dsp::max(vLBuffer, samples));
+                    sLScGraph.process(vLBuffer, samples);
 
-                        sSScMeter.process(vSBuffer, samples, dspu::bs::DBFS_TO_LUFS_SHIFT_GAIN);
-                        fSScGain    = lsp_max(fSInGain, dsp::max(vSBuffer, samples));
-                        sSScGraph.process(vSBuffer, samples);
-                    }
+                    sSScMeter.process(vSBuffer, samples, dspu::bs::DBFS_TO_LUFS_SHIFT_GAIN);
+                    fSScGain    = lsp_max(fSInGain, dsp::max(vSBuffer, samples));
+                    sSScGraph.process(vSBuffer, samples);
                     break;
             }
         }
@@ -666,13 +698,15 @@ namespace lsp
         {
             switch (enScMode)
             {
-                case meta::autogain::SCMODE_MATCH:
+                case meta::autogain::SCMODE_MATCH_SC:
+                case meta::autogain::SCMODE_MATCH_LINK:
                     // In 'Match' mode the sidechain channel defines the desired level of loudness.
                     // The actual sidechain level is already stored in the vGainBuffer.
                     sAutoGain.process(vGainBuffer, vLBuffer, vSBuffer, vGainBuffer, samples);
                     break;
 
-                case meta::autogain::SCMODE_CONTROL:
+                case meta::autogain::SCMODE_CONTROL_SC:
+                case meta::autogain::SCMODE_CONTROL_LINK:
                 case meta::autogain::SCMODE_INTERNAL:
                 default:
                     // Process autogain
@@ -727,6 +761,8 @@ namespace lsp
                 // Move pointers
                 c->vIn         += samples;
                 c->vScIn       += samples;
+                if (c->vShmIn != NULL)
+                    c->vShmIn      += samples;
                 c->vOut        += samples;
             }
         }
@@ -737,11 +773,8 @@ namespace lsp
             pSInGain->set_value(fSInGain);
             pLOutGain->set_value(fLOutGain);
             pSOutGain->set_value(fSOutGain);
-            if (bSidechain)
-            {
-                pLScGain->set_value(fLScGain);
-                pSScGain->set_value(fSScGain);
-            }
+            pLScGain->set_value(fLScGain);
+            pSScGain->set_value(fSScGain);
             pGain->set_value(fGain);
         }
 
@@ -809,36 +842,33 @@ namespace lsp
             }
 
             // Output sidechain metering
-            if (bSidechain)
+            mesh    = pLScGraph->buffer<plug::mesh_t>();
+            if ((mesh != NULL) && (mesh->isEmpty()))
             {
-                mesh    = pLScGraph->buffer<plug::mesh_t>();
-                if ((mesh != NULL) && (mesh->isEmpty()))
-                {
-                    dsp::copy(mesh->pvData[0], vTimePoints, meta::autogain::MESH_POINTS);
-                    dsp::copy(mesh->pvData[1], sLScGraph.data(), meta::autogain::MESH_POINTS);
-                    mesh->data(2, meta::autogain::MESH_POINTS);
-                }
+                dsp::copy(mesh->pvData[0], vTimePoints, meta::autogain::MESH_POINTS);
+                dsp::copy(mesh->pvData[1], sLScGraph.data(), meta::autogain::MESH_POINTS);
+                mesh->data(2, meta::autogain::MESH_POINTS);
+            }
 
-                mesh    = pSScGraph->buffer<plug::mesh_t>();
-                if ((mesh != NULL) && (mesh->isEmpty()))
-                {
-                    float *x = mesh->pvData[0];
-                    float *y = mesh->pvData[1];
+            mesh    = pSScGraph->buffer<plug::mesh_t>();
+            if ((mesh != NULL) && (mesh->isEmpty()))
+            {
+                float *x = mesh->pvData[0];
+                float *y = mesh->pvData[1];
 
-                    dsp::copy(&x[1], vTimePoints, meta::autogain::MESH_POINTS);
-                    dsp::copy(&y[1], sSInGraph.data(), meta::autogain::MESH_POINTS);
+                dsp::copy(&x[1], vTimePoints, meta::autogain::MESH_POINTS);
+                dsp::copy(&y[1], sSInGraph.data(), meta::autogain::MESH_POINTS);
 
 
-                    x[0] = x[1];
-                    y[0] = 0.0f;
+                x[0] = x[1];
+                y[0] = 0.0f;
 
-                    x += meta::autogain::MESH_POINTS + 1;
-                    y += meta::autogain::MESH_POINTS + 1;
-                    x[0] = x[-1];
-                    y[0] = 0.0f;
+                x += meta::autogain::MESH_POINTS + 1;
+                y += meta::autogain::MESH_POINTS + 1;
+                x[0] = x[-1];
+                y[0] = 0.0f;
 
-                    mesh->data(2, meta::autogain::MESH_POINTS + 2);
-                }
+                mesh->data(2, meta::autogain::MESH_POINTS + 2);
             }
 
             mesh    = pGainGraph->buffer<plug::mesh_t>();
@@ -992,6 +1022,7 @@ namespace lsp
 
                         v->write("pIn", c->pIn);
                         v->write("pScIn", c->pScIn);
+                        v->write("pShmIn", c->pShmIn);
                         v->write("pOut", c->pOut);
                     }
                     v->end_object();

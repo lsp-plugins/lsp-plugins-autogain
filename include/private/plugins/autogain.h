@@ -73,11 +73,13 @@ namespace lsp
 
                     float                  *vIn;                // Input signal
                     float                  *vScIn;              // Sidechain input
+                    float                  *vShmIn;             // Shared memory input
                     float                  *vOut;               // Output signal
                     float                  *vBuffer;            // Temporary buffer for audio processing
 
                     plug::IPort            *pIn;                // Input port
                     plug::IPort            *pScIn;              // Sidechain input port
+                    plug::IPort            *pShmIn;             // Shared memory input port
                     plug::IPort            *pOut;               // Output port
                 } channel_t;
 
@@ -117,6 +119,7 @@ namespace lsp
                 float                  *vLBuffer;           // Buffer for long input gain
                 float                  *vSBuffer;           // Buffer for short input gain
                 float                  *vGainBuffer;        // Buffer for gain correction
+                float                  *vEmptyBuffer;       // Empty buffer for audio fallback
                 float                  *vTimePoints;        // Time points
 
                 plug::IPort            *pBypass;            // Bypass
@@ -154,8 +157,10 @@ namespace lsp
 
             protected:
                 static dspu::bs::weighting_t    decode_weighting(size_t weighting);
+                meta::autogain::scmode_t        decode_sidechain_mode(size_t mode);
 
             protected:
+                const float            *select_buffer(const channel_t *c) const;
                 void                    do_destroy();
                 void                    bind_audio_ports();
                 void                    clean_meters();

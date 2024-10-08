@@ -46,22 +46,23 @@
 		<li>IEC 61672:2003 D filter - D filter defined by IEC 61672:2003 standard.</li>
 		<li>ITU-R BS.1770-4 K filter - K filter defined by ITU-R BS.1770-4 standard.</li>
 	</ul>
-	<?php if($sc) { ?>
 	<li><b>SC Mode</b> - sidechain mode:</li>
 	<ul>
 		<li>Internal</li> - the input signal is also fed to the sidechain.
-		<li>Control</li> - the level of sidechain signal and desired level of loudness are used co compute gain correction.
-		<li>Match</li> - the level of the input signal is corrected to match the level of the sidechain signal.
-	</ul>
+	<?php if($sc) { ?>
+		<li>Control SC</li> - the level of sidechain input signal and desired level of loudness are used co compute gain correction.
+		<li>Match SC</li> - the level of the input signal is corrected to match the level of the sidechain input signal.
+		<li>Control Link</li> - the level of the input signal passed by shared memory link and desired level of loudness are used co compute gain correction.
+		<li>Match Link</li> - the level of the input signal is corrected to match the level of the input signal passed by shared memory link.
 	<?php } ?>
+	</ul>
+	<li><b>Link</b> - the name of the shared memory link to pass control/match signal.</li>
 </ul>
 
 <p><b>Meters</b>:</p>
 <ul>
 	<li><b>In</b> - the loudness (measured for short and long periods) of the input signal in LUFS/LKFS units.</li>
-	<?php if($sc) { ?>
 	<li><b>Sc</b> - the loudness (measured for short and long periods) of the sidechain signal in LUFS/LKFS units.</li>
-	<?php } ?>
 	<li><b>Gan</b> - the level of the gain correction signal.</li>
 	<li><b>Out</b> - the loudness (measured for short and long periods) of the output signal in LUFS/LKFS units.</li>
 </ul>

@@ -134,10 +134,13 @@ namespace lsp
             enum scmode_t
             {
                 SCMODE_INTERNAL,
-                SCMODE_CONTROL,
-                SCMODE_MATCH,
+                SCMODE_CONTROL_SC,
+                SCMODE_MATCH_SC,
+                SCMODE_CONTROL_LINK,
+                SCMODE_MATCH_LINK,
 
-                SCMODE_DFL = SCMODE_CONTROL
+                SCMODE_DFL = SCMODE_INTERNAL,
+                SCMODE_DFL_SC = SCMODE_CONTROL_SC
             };
 
         } autogain;

@@ -16,9 +16,11 @@
 			"9db": "9 dB"
 		},
 		"sc": {
-			"control": "Control",
+			"control": "Control SC",
+			"control_link": "Control Link",
 			"internal": "Internal",
-			"match": "Match"
+			"match": "Match SC",
+			"match_link": "Match Link"
 		},
 		"weighting": {
 			"none": "None",
