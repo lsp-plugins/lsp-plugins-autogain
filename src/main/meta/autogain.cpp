@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2024 Linux Studio Plugins Project <https://lsp-plug.in/>
- *           (C) 2024 Vladimir Sadovnikov <sadko4u@gmail.com>
+ * Copyright (C) 2025 Linux Studio Plugins Project <https://lsp-plug.in/>
+ *           (C) 2025 Vladimir Sadovnikov <sadko4u@gmail.com>
  *
  * This file is part of lsp-plugins-autogain
  * Created on: 21 сен 2023 г.
@@ -112,8 +112,8 @@ namespace lsp
             AUTOGAIN_COMMON_SC(sc_modes_sc, meta::autogain::SCMODE_DFL_SC)
 
         #define AUTOGAIN_COMMON \
-            LOG_CONTROL("lperiod", "Loudness measuring long period", U_MSEC, meta::autogain::LONG_PERIOD), \
-            LOG_CONTROL("speriod", "Loudness measuring short period", U_MSEC, meta::autogain::SHORT_PERIOD), \
+            LOG_CONTROL("lperiod", "Loudness measuring long period", "Long period", U_MSEC, meta::autogain::LONG_PERIOD), \
+            LOG_CONTROL("speriod", "Loudness measuring short period", "Short period", U_MSEC, meta::autogain::SHORT_PERIOD), \
             COMBO("weight", "Weighting function", meta::autogain::WEIGHT_DFL, weighting_modes), \
             CONTROL("level", "Desired loudness level", U_LUFS, meta::autogain::LEVEL), \
             CONTROL("drift", "Level drift", U_DB, meta::autogain::DEVIATION), \
@@ -123,13 +123,13 @@ namespace lsp
             \
             SWITCH("qamp", "Enable quick amplifier", 0.0f), \
             COMBO("vgrow_l", "Long gain grow amount", meta::autogain::NUM_DFL, speed_numerators), \
-            LOG_CONTROL("tgrow_l", "Long gain grow time", U_MSEC, meta::autogain::LONG_GROW), \
+            LOG_CONTROL("tgrow_l", "Long gain grow time", "Long grow time", U_MSEC, meta::autogain::LONG_GROW), \
             COMBO("vfall_l", "Long gain fall amount", meta::autogain::NUM_DFL, speed_numerators), \
-            LOG_CONTROL("tfall_l", "Long gain fall time", U_MSEC, meta::autogain::LONG_FALL), \
+            LOG_CONTROL("tfall_l", "Long gain fall time", "Long fall time", U_MSEC, meta::autogain::LONG_FALL), \
             COMBO("vgrow_s", "Short gain grow amount", meta::autogain::NUM_DFL, speed_numerators), \
-            LOG_CONTROL("tgrow_s", "Short gain grow time", U_MSEC, meta::autogain::SHORT_GROW), \
+            LOG_CONTROL("tgrow_s", "Short gain grow time", "Short grow time", U_MSEC, meta::autogain::SHORT_GROW), \
             COMBO("vfall_s", "Short gain fall amount", meta::autogain::NUM_DFL, speed_numerators), \
-            LOG_CONTROL("tfall_s", "Short gain fall time", U_MSEC, meta::autogain::SHORT_FALL), \
+            LOG_CONTROL("tfall_s", "Short gain fall time", "Short fall time", U_MSEC, meta::autogain::SHORT_FALL), \
             \
             SWITCH("e_in_l", "Input metering enable for long period", 1.0f), \
             SWITCH("e_in_s", "Input metering enable for short period", 1.0f), \
