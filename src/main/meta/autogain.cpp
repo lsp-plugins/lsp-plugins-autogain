@@ -95,8 +95,8 @@ namespace lsp
             OPT_AUDIO_RETURN("scl_r", "Side-chain shared memory link input Right", 1, "link")
 
         #define AUTOGAIN_COMMON_SC(combo, combo_dfl) \
-            CONTROL("preamp", "Sidechain preamp", U_DB, meta::autogain::SC_PREAMP), \
-            CONTROL("lkahead", "Sidechain lookahead", U_MSEC, meta::autogain::SC_LOOKAHEAD), \
+            CONTROL("preamp", "Sidechain preamp", "SC preamp", U_DB, meta::autogain::SC_PREAMP), \
+            CONTROL("lkahead", "Sidechain lookahead", "SC look", U_MSEC, meta::autogain::SC_LOOKAHEAD), \
             COMBO("scmode", "Sidechain mode", "SC mode", combo_dfl, combo), \
             SWITCH("e_sc_l", "Sidechain metering enable for long period", "Long SC on", 1.0f), \
             SWITCH("e_sc_s", "Sidechain metering enable for short period", "Short SC on", 1.0f), \
@@ -115,11 +115,11 @@ namespace lsp
             LOG_CONTROL("lperiod", "Loudness measuring long period", "Long period", U_MSEC, meta::autogain::LONG_PERIOD), \
             LOG_CONTROL("speriod", "Loudness measuring short period", "Short period", U_MSEC, meta::autogain::SHORT_PERIOD), \
             COMBO("weight", "Weighting function", "Weighting", meta::autogain::WEIGHT_DFL, weighting_modes), \
-            CONTROL("level", "Desired loudness level", U_LUFS, meta::autogain::LEVEL), \
-            CONTROL("drift", "Level drift", U_DB, meta::autogain::DEVIATION), \
-            CONTROL("silence", "The level of silence", U_LUFS, meta::autogain::SILENCE), \
+            CONTROL("level", "Desired loudness level", "Loudness", U_LUFS, meta::autogain::LEVEL), \
+            CONTROL("drift", "Level drift", "Drift", U_DB, meta::autogain::DEVIATION), \
+            CONTROL("silence", "The level of silence", "Silence", U_LUFS, meta::autogain::SILENCE), \
             SWITCH("max_on", "Enable maximum amplification gain limitation", "Gain limit on", 0.0f), \
-            CONTROL("max_amp", "The maximum amplification gain", U_DB, meta::autogain::MAX_GAIN), \
+            CONTROL("max_amp", "The maximum amplification gain", "Max gain", U_DB, meta::autogain::MAX_GAIN), \
             \
             SWITCH("qamp", "Enable quick amplifier", "Quick amp", 0.0f), \
             COMBO("vgrow_l", "Long gain grow amount", "Long grow", meta::autogain::NUM_DFL, speed_numerators), \
