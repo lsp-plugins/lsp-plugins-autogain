@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2024 Linux Studio Plugins Project <https://lsp-plug.in/>
- *           (C) 2024 Vladimir Sadovnikov <sadko4u@gmail.com>
+ * Copyright (C) 2025 Linux Studio Plugins Project <https://lsp-plug.in/>
+ *           (C) 2025 Vladimir Sadovnikov <sadko4u@gmail.com>
  *
  * This file is part of lsp-plugins-autogain
  * Created on: 21 сен 2023 г.
@@ -25,7 +25,7 @@
 
 #define LSP_PLUGINS_AUTOGAIN_VERSION_MAJOR       1
 #define LSP_PLUGINS_AUTOGAIN_VERSION_MINOR       0
-#define LSP_PLUGINS_AUTOGAIN_VERSION_MICRO       10
+#define LSP_PLUGINS_AUTOGAIN_VERSION_MICRO       11
 
 #define LSP_PLUGINS_AUTOGAIN_VERSION  \
     LSP_MODULE_VERSION( \
@@ -95,11 +95,11 @@ namespace lsp
             OPT_AUDIO_RETURN("scl_r", "Side-chain shared memory link input Right", 1, "link")
 
         #define AUTOGAIN_COMMON_SC(combo, combo_dfl) \
-            CONTROL("preamp", "Sidechain preamp", U_DB, meta::autogain::SC_PREAMP), \
-            CONTROL("lkahead", "Sidechain lookahead", U_MSEC, meta::autogain::SC_LOOKAHEAD), \
-            COMBO("scmode", "Sidechain mode", combo_dfl, combo), \
-            SWITCH("e_sc_l", "Sidechain metering enable for long period", 1.0f), \
-            SWITCH("e_sc_s", "Sidechain metering enable for short period", 1.0f), \
+            CONTROL("preamp", "Sidechain preamp", "SC preamp", U_DB, meta::autogain::SC_PREAMP), \
+            CONTROL("lkahead", "Sidechain lookahead", "SC look", U_MSEC, meta::autogain::SC_LOOKAHEAD), \
+            COMBO("scmode", "Sidechain mode", "SC mode", combo_dfl, combo), \
+            SWITCH("e_sc_l", "Sidechain metering enable for long period", "Long SC on", 1.0f), \
+            SWITCH("e_sc_s", "Sidechain metering enable for short period", "Short SC on", 1.0f), \
             METER_GAIN("g_sc_l", "Sidechain loudness meter for long period", GAIN_AMP_P_48_DB), \
             METER_GAIN("g_sc_s", "Sidechain loudness meter for short period", GAIN_AMP_P_48_DB), \
             MESH("gr_sc_l", "Sidechain loudness graph for long period", 2, meta::autogain::MESH_POINTS), \
@@ -112,30 +112,30 @@ namespace lsp
             AUTOGAIN_COMMON_SC(sc_modes_sc, meta::autogain::SCMODE_DFL_SC)
 
         #define AUTOGAIN_COMMON \
-            LOG_CONTROL("lperiod", "Loudness measuring long period", U_MSEC, meta::autogain::LONG_PERIOD), \
-            LOG_CONTROL("speriod", "Loudness measuring short period", U_MSEC, meta::autogain::SHORT_PERIOD), \
-            COMBO("weight", "Weighting function", meta::autogain::WEIGHT_DFL, weighting_modes), \
-            CONTROL("level", "Desired loudness level", U_LUFS, meta::autogain::LEVEL), \
-            CONTROL("drift", "Level drift", U_DB, meta::autogain::DEVIATION), \
-            CONTROL("silence", "The level of silence", U_LUFS, meta::autogain::SILENCE), \
-            SWITCH("max_on", "Enable maximum amplification gain limitation", 0.0f), \
-            CONTROL("max_amp", "The maximum amplification gain", U_DB, meta::autogain::MAX_GAIN), \
+            LOG_CONTROL("lperiod", "Loudness measuring long period", "Long period", U_MSEC, meta::autogain::LONG_PERIOD), \
+            LOG_CONTROL("speriod", "Loudness measuring short period", "Short period", U_MSEC, meta::autogain::SHORT_PERIOD), \
+            COMBO("weight", "Weighting function", "Weighting", meta::autogain::WEIGHT_DFL, weighting_modes), \
+            CONTROL("level", "Desired loudness level", "Loudness", U_LUFS, meta::autogain::LEVEL), \
+            CONTROL("drift", "Level drift", "Drift", U_DB, meta::autogain::DEVIATION), \
+            CONTROL("silence", "The level of silence", "Silence", U_LUFS, meta::autogain::SILENCE), \
+            SWITCH("max_on", "Enable maximum amplification gain limitation", "Gain limit on", 0.0f), \
+            CONTROL("max_amp", "The maximum amplification gain", "Max gain", U_DB, meta::autogain::MAX_GAIN), \
             \
-            SWITCH("qamp", "Enable quick amplifier", 0.0f), \
-            COMBO("vgrow_l", "Long gain grow amount", meta::autogain::NUM_DFL, speed_numerators), \
-            LOG_CONTROL("tgrow_l", "Long gain grow time", U_MSEC, meta::autogain::LONG_GROW), \
-            COMBO("vfall_l", "Long gain fall amount", meta::autogain::NUM_DFL, speed_numerators), \
-            LOG_CONTROL("tfall_l", "Long gain fall time", U_MSEC, meta::autogain::LONG_FALL), \
-            COMBO("vgrow_s", "Short gain grow amount", meta::autogain::NUM_DFL, speed_numerators), \
-            LOG_CONTROL("tgrow_s", "Short gain grow time", U_MSEC, meta::autogain::SHORT_GROW), \
-            COMBO("vfall_s", "Short gain fall amount", meta::autogain::NUM_DFL, speed_numerators), \
-            LOG_CONTROL("tfall_s", "Short gain fall time", U_MSEC, meta::autogain::SHORT_FALL), \
+            SWITCH("qamp", "Enable quick amplifier", "Quick amp", 0.0f), \
+            COMBO("vgrow_l", "Long gain grow amount", "Long grow", meta::autogain::NUM_DFL, speed_numerators), \
+            LOG_CONTROL("tgrow_l", "Long gain grow time", "Long grow time", U_MSEC, meta::autogain::LONG_GROW), \
+            COMBO("vfall_l", "Long gain fall amount", "Long fall", meta::autogain::NUM_DFL, speed_numerators), \
+            LOG_CONTROL("tfall_l", "Long gain fall time", "Long fall time", U_MSEC, meta::autogain::LONG_FALL), \
+            COMBO("vgrow_s", "Short gain grow amount", "Short grow", meta::autogain::NUM_DFL, speed_numerators), \
+            LOG_CONTROL("tgrow_s", "Short gain grow time", "Short grow time", U_MSEC, meta::autogain::SHORT_GROW), \
+            COMBO("vfall_s", "Short gain fall amount", "Short fall", meta::autogain::NUM_DFL, speed_numerators), \
+            LOG_CONTROL("tfall_s", "Short gain fall time", "Short fall time", U_MSEC, meta::autogain::SHORT_FALL), \
             \
-            SWITCH("e_in_l", "Input metering enable for long period", 1.0f), \
-            SWITCH("e_in_s", "Input metering enable for short period", 1.0f), \
-            SWITCH("e_out_l", "Output metering enable for long period", 1.0f), \
-            SWITCH("e_out_s", "Output metering enable for short period", 1.0f), \
-            SWITCH("e_g", "Gain correction metering", 1.0f), \
+            SWITCH("e_in_l", "Input metering enable for long period", "Show In long", 1.0f), \
+            SWITCH("e_in_s", "Input metering enable for short period", "Show In short", 1.0f), \
+            SWITCH("e_out_l", "Output metering enable for long period", "Show Out long", 1.0f), \
+            SWITCH("e_out_s", "Output metering enable for short period", "Show Out short", 1.0f), \
+            SWITCH("e_g", "Gain correction metering", "Show Gain", 1.0f), \
             \
             METER_GAIN("g_in_l", "Input loudness meter for long period", GAIN_AMP_P_48_DB), \
             METER_GAIN("g_in_s", "Input loudness meter for short period", GAIN_AMP_P_48_DB), \
