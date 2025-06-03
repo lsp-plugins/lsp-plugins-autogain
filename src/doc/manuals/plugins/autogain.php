@@ -29,7 +29,7 @@
 <p>
 	If the level of the signal rapidly changes, the plugin can also rapidly reduce the shocking effect of the loud sound
 	and (if enabled) rapidly raise the gain, too. Despite, because it uses RMS measurements, it does not fully protect from
-	sudden loud clicks/pops, and aditional surge protection should be applied. Additional control over the zero level also
+	sudden loud clicks/pops, and additional surge protection should be applied. Additional control over the zero level also
 	makes the plugin act as a trigger: if the signal is below the mimum level, then the gain value does not change.
 	This prevents from significant amplification of a background noise in the case of long silence at the input. 
 </p>
