@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2024 Linux Studio Plugins Project <https://lsp-plug.in/>
- *           (C) 2024 Vladimir Sadovnikov <sadko4u@gmail.com>
+ * Copyright (C) 2025 Linux Studio Plugins Project <https://lsp-plug.in/>
+ *           (C) 2025 Vladimir Sadovnikov <sadko4u@gmail.com>
  *
  * This file is part of lsp-plugins-autogain
  * Created on: 21 сен 2023 г.
@@ -30,14 +30,14 @@
 
 #include <private/plugins/autogain.h>
 
-/* The size of temporary buffer for audio processing */
-#define BUFFER_SIZE         0x400U
-
 namespace lsp
 {
     namespace plugins
     {
-        /* Gain numberators multiplied by 10 */
+        /* The size of temporary buffer for audio processing */
+        static constexpr size_t BUFFER_SIZE         = 0x400;
+
+        /* Gain numerators multiplied by 10 */
         static const uint8_t gain_numerators[] = { 1, 5, 10, 30, 60, 90, 100, 120, 150, 180, 200, 210, 240 };
 
         //---------------------------------------------------------------------
@@ -94,6 +94,7 @@ namespace lsp
             vGainBuffer     = NULL;
             vEmptyBuffer    = NULL;
             vTimePoints     = NULL;
+            vIDisplay       = NULL;
 
             pBypass         = NULL;
             pScMode         = NULL;
@@ -158,6 +159,7 @@ namespace lsp
                 szof_buffer +       // vGainBuffer
                 szof_buffer +       // vEmptyBuffer
                 szof_graph +        // vTimePoints
+                szof_graph +        // vIDisplay
                 nChannels * (
                     szof_buffer     // vBuffer
                 );
@@ -189,6 +191,7 @@ namespace lsp
             vGainBuffer             = advance_ptr_bytes<float>(ptr, szof_buffer);
             vEmptyBuffer            = advance_ptr_bytes<float>(ptr, szof_buffer);
             vTimePoints             = advance_ptr_bytes<float>(ptr, szof_graph);
+            vIDisplay               = advance_ptr_bytes<float>(ptr, szof_graph);
 
             for (size_t i=0; i < nChannels; ++i)
             {
@@ -787,7 +790,7 @@ namespace lsp
             if ((mesh != NULL) && (mesh->isEmpty()))
             {
                 dsp::copy(mesh->pvData[0], vTimePoints, meta::autogain::MESH_POINTS);
-                dsp::copy(mesh->pvData[1], sLInGraph.data(), meta::autogain::MESH_POINTS);
+                sLInGraph.read(mesh->pvData[1], meta::autogain::MESH_POINTS);
                 mesh->data(2, meta::autogain::MESH_POINTS);
             }
 
@@ -798,7 +801,7 @@ namespace lsp
                 float *y = mesh->pvData[1];
 
                 dsp::copy(&x[1], vTimePoints, meta::autogain::MESH_POINTS);
-                dsp::copy(&y[1], sSInGraph.data(), meta::autogain::MESH_POINTS);
+                sSInGraph.read(&y[1], meta::autogain::MESH_POINTS);
 
 
                 x[0] = x[1];
@@ -816,7 +819,7 @@ namespace lsp
             if ((mesh != NULL) && (mesh->isEmpty()))
             {
                 dsp::copy(mesh->pvData[0], vTimePoints, meta::autogain::MESH_POINTS);
-                dsp::copy(mesh->pvData[1], sLOutGraph.data(), meta::autogain::MESH_POINTS);
+                sLOutGraph.read(mesh->pvData[1], meta::autogain::MESH_POINTS);
                 mesh->data(2, meta::autogain::MESH_POINTS);
             }
 
@@ -827,7 +830,7 @@ namespace lsp
                 float *y = mesh->pvData[1];
 
                 dsp::copy(&x[1], vTimePoints, meta::autogain::MESH_POINTS);
-                dsp::copy(&y[1], sSInGraph.data(), meta::autogain::MESH_POINTS);
+                sSInGraph.read(&y[1], meta::autogain::MESH_POINTS);
 
 
                 x[0] = x[1];
@@ -846,7 +849,7 @@ namespace lsp
             if ((mesh != NULL) && (mesh->isEmpty()))
             {
                 dsp::copy(mesh->pvData[0], vTimePoints, meta::autogain::MESH_POINTS);
-                dsp::copy(mesh->pvData[1], sLScGraph.data(), meta::autogain::MESH_POINTS);
+                sLScGraph.read(mesh->pvData[1], meta::autogain::MESH_POINTS);
                 mesh->data(2, meta::autogain::MESH_POINTS);
             }
 
@@ -857,8 +860,7 @@ namespace lsp
                 float *y = mesh->pvData[1];
 
                 dsp::copy(&x[1], vTimePoints, meta::autogain::MESH_POINTS);
-                dsp::copy(&y[1], sSInGraph.data(), meta::autogain::MESH_POINTS);
-
+                sSInGraph.read(&y[1], meta::autogain::MESH_POINTS);
 
                 x[0] = x[1];
                 y[0] = 0.0f;
@@ -878,7 +880,7 @@ namespace lsp
                 float *y = mesh->pvData[1];
 
                 dsp::copy(&x[2], vTimePoints, meta::autogain::MESH_POINTS);
-                dsp::copy(&y[2], sGainGraph.data(), meta::autogain::MESH_POINTS);
+                sGainGraph.read(&y[2], meta::autogain::MESH_POINTS);
 
                 x[0] = x[2] + 0.5f;
                 x[1] = x[0];
@@ -955,10 +957,10 @@ namespace lsp
             // Draw gain curve
             {
                 // Initialize values
-                float *ft       = sGainGraph.data();
+                sGainGraph.read(vIDisplay, meta::autogain::MESH_POINTS);
                 float *g        = b->v[1];
                 for (size_t k=0; k<width; ++k)
-                    g[k]            = ft[size_t(r*k)];
+                    g[k]            = vIDisplay[size_t(r*k)];
 
                 // Initialize coords
                 dsp::fill(b->v[2], width, width);
@@ -1046,6 +1048,7 @@ namespace lsp
             v->write("vSBuffer", vSBuffer);
             v->write("vGainBuffer", vGainBuffer);
             v->write("vTimePoints", vTimePoints);
+            v->write("vIDisplay", vIDisplay);
 
             v->write("pBypass", pBypass);
             v->write("pScMode", pScMode);
