@@ -4,6 +4,7 @@
 
 === 1.0.13 ===
 * Optimized code for updated implementation of dspu::MeterGraph.
+* Updated build scripts and dependencies.
 
 === 1.0.12 ===
 * Updated build scripts and dependencies.
