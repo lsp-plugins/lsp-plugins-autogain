@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2023 Linux Studio Plugins Project <https://lsp-plug.in/>
- *           (C) 2023 Vladimir Sadovnikov <sadko4u@gmail.com>
+ * Copyright (C) 2025 Linux Studio Plugins Project <https://lsp-plug.in/>
+ *           (C) 2025 Vladimir Sadovnikov <sadko4u@gmail.com>
  *
  * This file is part of lsp-plugins-autogain
  * Created on: 21 сен 2023 г.
@@ -121,6 +121,7 @@ namespace lsp
                 float                  *vGainBuffer;        // Buffer for gain correction
                 float                  *vEmptyBuffer;       // Empty buffer for audio fallback
                 float                  *vTimePoints;        // Time points
+                float                  *vIDisplay;          // Inline display buffer
 
                 plug::IPort            *pBypass;            // Bypass
                 plug::IPort            *pScMode;            // Sidechain mode
