@@ -1,7 +1,13 @@
 {
 	"autogain": {
-		"name": "Automatic Gain Control",
-		"description": "This plugin allows to stick the loudness of the audio to the desired level"
+		"description": "This plugin allows to stick the loudness of the audio to the desired level.",
+		"name": "Automatic Gain Control"
+	},
+	"launcher": {
+		"autogain_mono": "Mono",
+		"autogain_stereo": "Stereo",
+		"sc_autogain_mono": "SC Mono",
+		"sc_autogain_stereo": "SC Stereo"
 	}
 }
 
