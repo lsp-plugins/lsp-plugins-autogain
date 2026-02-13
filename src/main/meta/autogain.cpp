@@ -234,7 +234,7 @@ namespace lsp
             clap_features_mono,
             E_DUMP_STATE | E_INLINE_DISPLAY,
             autogain_mono_ports,
-            "util/autogain.xml",
+            "plugins/util/autogain.xml",
             NULL,
             mono_plugin_port_groups,
             &autogain_bundle
@@ -265,7 +265,7 @@ namespace lsp
             clap_features_stereo,
             E_DUMP_STATE | E_INLINE_DISPLAY,
             autogain_stereo_ports,
-            "util/autogain.xml",
+            "plugins/util/autogain.xml",
             NULL,
             stereo_plugin_port_groups,
             &autogain_bundle
@@ -296,7 +296,7 @@ namespace lsp
             clap_features_mono,
             E_DUMP_STATE | E_INLINE_DISPLAY,
             sc_autogain_mono_ports,
-            "util/autogain.xml",
+            "plugins/util/autogain.xml",
             NULL,
             mono_plugin_sidechain_port_groups,
             &autogain_bundle
@@ -327,7 +327,7 @@ namespace lsp
             clap_features_stereo,
             E_DUMP_STATE | E_INLINE_DISPLAY,
             sc_autogain_stereo_ports,
-            "util/autogain.xml",
+            "plugins/util/autogain.xml",
             NULL,
             stereo_plugin_sidechain_port_groups,
             &autogain_bundle
