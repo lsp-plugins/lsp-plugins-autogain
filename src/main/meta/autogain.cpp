@@ -237,7 +237,8 @@ namespace lsp
             "plugins/util/autogain.xml",
             NULL,
             mono_plugin_port_groups,
-            &autogain_bundle
+            &autogain_bundle,
+            3
         };
         LSP_REGISTER_METADATA(autogain_mono);
 
@@ -268,7 +269,8 @@ namespace lsp
             "plugins/util/autogain.xml",
             NULL,
             stereo_plugin_port_groups,
-            &autogain_bundle
+            &autogain_bundle,
+            1
         };
         LSP_REGISTER_METADATA(autogain_stereo);
 
@@ -299,7 +301,8 @@ namespace lsp
             "plugins/util/autogain.xml",
             NULL,
             mono_plugin_sidechain_port_groups,
-            &autogain_bundle
+            &autogain_bundle,
+            4
         };
         LSP_REGISTER_METADATA(sc_autogain_mono);
 
@@ -330,12 +333,10 @@ namespace lsp
             "plugins/util/autogain.xml",
             NULL,
             stereo_plugin_sidechain_port_groups,
-            &autogain_bundle
+            &autogain_bundle,
+            2
         };
         LSP_REGISTER_METADATA(sc_autogain_stereo);
 
     } /* namespace meta */
 } /* namespace lsp */
-
-
-
