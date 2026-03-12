@@ -1,6 +1,6 @@
 /*
- * Copyright (C) 2025 Linux Studio Plugins Project <https://lsp-plug.in/>
- *           (C) 2025 Vladimir Sadovnikov <sadko4u@gmail.com>
+ * Copyright (C) 2026 Linux Studio Plugins Project <https://lsp-plug.in/>
+ *           (C) 2026 Vladimir Sadovnikov <sadko4u@gmail.com>
  *
  * This file is part of lsp-plugins-autogain
  * Created on: 21 сен 2023 г.
@@ -20,12 +20,13 @@
  */
 
 #include <lsp-plug.in/plug-fw/meta/ports.h>
+#include <lsp-plug.in/plug-fw/meta/registry.h>
 #include <lsp-plug.in/shared/meta/developers.h>
 #include <private/meta/autogain.h>
 
 #define LSP_PLUGINS_AUTOGAIN_VERSION_MAJOR       1
 #define LSP_PLUGINS_AUTOGAIN_VERSION_MINOR       0
-#define LSP_PLUGINS_AUTOGAIN_VERSION_MICRO       15
+#define LSP_PLUGINS_AUTOGAIN_VERSION_MICRO       16
 
 #define LSP_PLUGINS_AUTOGAIN_VERSION  \
     LSP_MODULE_VERSION( \
@@ -233,11 +234,13 @@ namespace lsp
             clap_features_mono,
             E_DUMP_STATE | E_INLINE_DISPLAY,
             autogain_mono_ports,
-            "util/autogain.xml",
+            "plugins/util/autogain.xml",
             NULL,
             mono_plugin_port_groups,
-            &autogain_bundle
+            &autogain_bundle,
+            3
         };
+        LSP_REGISTER_METADATA(autogain_mono);
 
         const plugin_t autogain_stereo =
         {
@@ -263,11 +266,13 @@ namespace lsp
             clap_features_stereo,
             E_DUMP_STATE | E_INLINE_DISPLAY,
             autogain_stereo_ports,
-            "util/autogain.xml",
+            "plugins/util/autogain.xml",
             NULL,
             stereo_plugin_port_groups,
-            &autogain_bundle
+            &autogain_bundle,
+            1
         };
+        LSP_REGISTER_METADATA(autogain_stereo);
 
         const plugin_t sc_autogain_mono =
         {
@@ -293,11 +298,13 @@ namespace lsp
             clap_features_mono,
             E_DUMP_STATE | E_INLINE_DISPLAY,
             sc_autogain_mono_ports,
-            "util/autogain.xml",
+            "plugins/util/autogain.xml",
             NULL,
             mono_plugin_sidechain_port_groups,
-            &autogain_bundle
+            &autogain_bundle,
+            4
         };
+        LSP_REGISTER_METADATA(sc_autogain_mono);
 
         const plugin_t sc_autogain_stereo =
         {
@@ -323,13 +330,13 @@ namespace lsp
             clap_features_stereo,
             E_DUMP_STATE | E_INLINE_DISPLAY,
             sc_autogain_stereo_ports,
-            "util/autogain.xml",
+            "plugins/util/autogain.xml",
             NULL,
             stereo_plugin_sidechain_port_groups,
-            &autogain_bundle
+            &autogain_bundle,
+            2
         };
+        LSP_REGISTER_METADATA(sc_autogain_stereo);
+
     } /* namespace meta */
 } /* namespace lsp */
-
-
-
