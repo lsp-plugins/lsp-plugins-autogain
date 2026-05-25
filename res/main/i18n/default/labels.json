@@ -1,9 +1,9 @@
 {
 	"autogain": {
-		"long_time_processing": "Long-time processing",
-		"short_time_processing": "Short-time processing"
+		"long_time_processing": "Long-Time Processing",
+		"short_time_processing": "Short-Time Processing"
 	},
 	"plug": {
-		"autogain": "Automatic gain control"
+		"autogain": "Automatic Gain Control"
 	}
 }
